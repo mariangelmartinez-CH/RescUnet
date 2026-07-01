@@ -3,6 +3,8 @@ package com.juego.progra.Personajes;
 import com.juego.progra.Mapas.MapasNiveles;
 
 public class Jugador extends Personaje{
+
+    //Constructor
     public Jugador(float x, float y) {
         super(x, y, "personaje.png.png");
     }

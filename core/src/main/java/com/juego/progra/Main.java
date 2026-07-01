@@ -26,17 +26,14 @@ public class Main extends Game {
         Gdx.gl.glClearColor(0.15f, 0.15f, 0.15f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // OBTENER DELTA TIME (El tiempo real que tarda la compu en procesar el juego)
         float delta = Gdx.graphics.getDeltaTime();
 
-        // 2. ACTUALIZAR LÓGICA
         jugador.actualizar(mapa, delta);
 
-        // 3. DIBUJAR LAS ENTIDADES
-        batch.begin(); // ¡Abrimos la brocha!
+        batch.begin();
 
-        mapa.dibujar(batch);    // Se dibuja el botánico de fondo
-        jugador.dibujar(batch); // Se dibuja el estudiante encima con su foto (.png)
+        mapa.dibujar(batch);
+        //jugador.dibujar(batch);
 
         batch.end();
     }
