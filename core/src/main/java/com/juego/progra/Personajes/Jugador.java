@@ -15,7 +15,7 @@ public class Jugador extends Personaje{
     public void actualizar(MapasNiveles mapa, float delta) {
         if (tiempoSinPerderVidas > 0) tiempoSinPerderVidas -= delta;
 
-        // Movimiento en X
+        // MOVIMIENTO EN X
         float newX = x;
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) newX += 200 * delta;
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT))  newX -= 200 * delta;
@@ -25,7 +25,7 @@ public class Jugador extends Personaje{
         int colX  = (int)((bordeX - 124) / 52);
         if (mapa.CaminarCelda(filaX, colX)) x = newX;
 
-        // Movimiento en Y - solo los PIES (newY)
+        // MOVIMIENTO EN Y SOLO LOS PIES (newY)
         float newY = y;
         if (Gdx.input.isKeyPressed(Input.Keys.UP))   newY += 200 * delta;
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN))  newY -= 200 * delta;
@@ -38,7 +38,7 @@ public class Jugador extends Personaje{
     public void perderVida(){
         if (tiempoSinPerderVidas <= 0) {
             vidas--;
-            tiempoSinPerderVidas = 2;// 2 segundos de invencibilidad
+            tiempoSinPerderVidas = 2;// 2 SEGUNDOS SIN PERDER VIDA
         }
     }
 
@@ -46,7 +46,7 @@ public class Jugador extends Personaje{
         if (tiempoSinPerderVidas <= 0) {
             vidas--;
             tiempoSinPerderVidas = 2;
-            x = 384; y = 458; // posición válida dentro del mapa
+            x = 384; y = 458; // POSICION VALIDA DENTRO DEL MAPA
         }
     }
 
