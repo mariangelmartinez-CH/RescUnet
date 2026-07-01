@@ -17,7 +17,7 @@ public class Main extends Game {
     public void create(){
         batch = new SpriteBatch();
         mapa = new MapasNiveles();
-        jugador = new Jugador(100, 100);
+        jugador = new Jugador(384, 458);
         enemigo = new Enemigo(400, 300);
     }
 

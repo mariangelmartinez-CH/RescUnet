@@ -14,13 +14,25 @@ public class Jugador extends Personaje{
     @Override
     public void actualizar(MapasNiveles mapa, float delta) {
         if (tiempoSinPerderVidas > 0) tiempoSinPerderVidas -= delta;
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) x += 200 * delta;
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT))  x -= 200 * delta;
-        if (Gdx.input.isKeyPressed(Input.Keys.UP))    y += 200 * delta;
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN))  y -= 200 * delta;
 
-        x = Math.max(0, Math.min(x, 800 - 50));
-        y = Math.max(0, Math.min(y, 480 - 50));
+        // Movimiento en X
+        float newX = x;
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) newX += 200 * delta;
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT))  newX -= 200 * delta;
+
+        float bordeX = (newX >= x) ? newX + 50 : newX;
+        int filaX = (int)((y - 134) / 36);
+        int colX  = (int)((bordeX - 124) / 52);
+        if (mapa.CaminarCelda(filaX, colX)) x = newX;
+
+        // Movimiento en Y - solo los PIES (newY)
+        float newY = y;
+        if (Gdx.input.isKeyPressed(Input.Keys.UP))   newY += 200 * delta;
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN))  newY -= 200 * delta;
+
+        int filaY = (int)((newY - 134) / 36);
+        int colY  = (int)(((x + 25) - 124) / 52);
+        if (mapa.CaminarCelda(filaY, colY)) y = newY;
     }
 
     public void perderVida(){
@@ -34,8 +46,7 @@ public class Jugador extends Personaje{
         if (tiempoSinPerderVidas <= 0) {
             vidas--;
             tiempoSinPerderVidas = 2;
-            x = 100; // regresa a posición inicial
-            y = 100;
+            x = 384; y = 458; // posición válida dentro del mapa
         }
     }
 

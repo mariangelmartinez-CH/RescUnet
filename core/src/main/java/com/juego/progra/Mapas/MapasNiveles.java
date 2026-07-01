@@ -44,15 +44,15 @@ public class MapasNiveles {
     public void dibujar(SpriteBatch batch) {
         batch.draw(fondo,0,0,1408,768);
 
-        float inicioX=100;
-        float inicioY=15;
+        float inicioX=124;
+        float inicioY=134;
 
         //Recorre la matriz
         for (int i = 0; i < mapaNivel1.length; i++) {
             for (int j = 0; j < mapaNivel1[i].length; j++) {
                 //Para calcular los pixeles en la pantalla
-                float xPixel = (j*54)+inicioX; //Columna, eje x
-                float yPixel = (i*57)+inicioY;//Fila, eje y
+                float xPixel = (j*52)+inicioX; //Columna, eje x
+                float yPixel = (i*36)+inicioY;//Fila, eje y
 
                 if(mapaNivel1[i][j]==2){
                     batch.draw(arbusto,xPixel,yPixel,70,70);
@@ -66,11 +66,11 @@ public class MapasNiveles {
         batch.draw(valla,0,0,1408, 768);
     }
     public boolean CaminarCelda (int cX, int cY){
-        if(cX<0 || cX>=22 || cY<0 || cY>=12){
+        if(cX<0 || cX>=12 || cY<0 || cY>=22){
             return false;
         }
         int cActual = mapaNivel1[cX][cY];
-        if(cActual==0 || cActual==3){
+        if(cActual==0 ){
             return true;
         }else{
             return false;
@@ -79,7 +79,7 @@ public class MapasNiveles {
 
     public boolean obtenerObjeto(int cX,int cY){
         int obj= mapaNivel1[cX][cY];
-        if(obj==3){
+        if(obj==4){
             mapaNivel1[cX][cY]=0;
             return true;
         }else{
