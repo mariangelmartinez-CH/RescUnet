@@ -11,40 +11,51 @@ public class Main extends Game {
     private SpriteBatch batch;
     private MapasNiveles mapa;
     private Jugador jugador;
-    private Enemigo enemigo;
+    private Enemigo[] enemigos;
 
     @Override
-    public void create(){
+    public void create() {
         batch = new SpriteBatch();
         mapa = new MapasNiveles();
         jugador = new Jugador(384, 458);
-        enemigo = new Enemigo(400, 300);
+        enemigos = new Enemigo[] {
+            new Enemigo(300, 510, Enemigo.HORIZONTAL),
+            new Enemigo(900, 185, Enemigo.HORIZONTAL),
+            new Enemigo(700, 386, Enemigo.ALEATORIO)
+        };
     }
 
-    public void render(){
+    @Override
+    public void render() {
         Gdx.gl.glClearColor(0.15f, 0.15f, 0.15f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        float delta = Gdx.graphics.getDeltaTime();
 
-        float delta = Gdx.graphics.getDeltaTime();//-> MOVIMIENTO FLUIDO
+        jugador.actualizar(mapa, delta);
 
-        jugador.actualizar(mapa, delta);//-> LLAMA AL METODO ACTUALIZAR Y SE LE PASA EL MAPA PARA COLISIONES DESPUES Y DELTA PARA EL MOVIMIENTO FLUIDO
-        enemigo.actualizar(mapa, delta);
-        // COLISION JUGADOR-ENEMIGO
-        if (Math.abs(jugador.getX() - enemigo.getX()) < 50 &&
-            Math.abs(jugador.getY() - enemigo.getY()) < 50) {
-            jugador.recibirGolpe();
+        for (Enemigo e : enemigos) {
+            e.actualizar(mapa, delta);
+            if (Math.abs(jugador.getX() - e.getX()) < 50 &&
+                Math.abs(jugador.getY() - e.getY()) < 50) {
+                jugador.recibirGolpe();
+            }
         }
 
-        batch.begin();// ABRE EL PINCEL , A PARTIR DE AQUI SE PUEDE DIBUJAR
-        mapa.dibujar(batch);    // DIBUJA EL FONDO
-        jugador.dibujar(batch); // DIBUJA EL JUGADOR ENCIMA
-        enemigo.dibujar(batch);
-        batch.end(); //CIERRA EL PINCEL, ENVIA TODO_ A LA PANTALLA
-
+        batch.begin();
+        mapa.dibujar(batch);
+        jugador.dibujar(batch);
+        for (Enemigo e : enemigos) {
+            e.dibujar(batch);
+        }
+        batch.end();
     }
-    @Override // SE EJECUTA UNA SOLA VEZ AL CERRAR EL JUEGO LIBERA MEMORIA DE TODO_
+
+    @Override
     public void dispose() {
         batch.dispose();
         jugador.dispose();
+        for (Enemigo e : enemigos) {
+            e.dispose();
+        }
     }
 }

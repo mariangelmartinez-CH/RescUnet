@@ -47,6 +47,7 @@ public class Jugador extends Personaje{
             vidas--;
             tiempoSinPerderVidas = 2;
             x = 384; y = 458; // POSICION VALIDA DENTRO DEL MAPA
+            Gdx.app.log("JUEGO", "Vidas restantes: " + vidas);
         }
     }
 

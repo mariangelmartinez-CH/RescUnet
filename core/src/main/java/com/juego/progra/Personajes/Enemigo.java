@@ -1,37 +1,66 @@
 package com.juego.progra.Personajes;
-import com.juego.progra.Mapas.MapasNiveles;
 import com.badlogic.gdx.math.MathUtils;
+import com.juego.progra.Mapas.MapasNiveles;
 
-  public class Enemigo extends Personaje {
+public class Enemigo extends Personaje {
+    public static final int HORIZONTAL = 0;
+    public static final int ALEATORIO  = 1;
 
-      public Enemigo(float x, float y) {
-          super(x, y, "personaje.png.png");//POR AHORA USAMOS LA MISMA IMAGEN DEL JUGADOR PARA LLENAR EL CONSTRUCTOR LUEGO LE PONEOS UNA DIFERENTE
+    private int tipo;
+    private float tiempoCambio = 0;
+    private int direccion;
 
-      }
+    public Enemigo(float x, float y, int tipo) {
+        super(x, y, "personaje.png.png");
+        this.tipo = tipo;
+        this.direccion = 0;
+    }
 
-      private float cambio=0;
-      private int direccion =0; //ESTO SE MANEJARA CON EL CASE
+    @Override
+    public void actualizar(MapasNiveles mapa, float delta) {
+        if (tipo == ALEATORIO) {
+            tiempoCambio += delta;
+            if (tiempoCambio >= 2) {
+                direccion = MathUtils.random(0, 3);
+                tiempoCambio = 0;
+            }
+        }
 
-      @Override
-      public void actualizar(MapasNiveles mapa, float delta) {
-          cambio+=delta;
+        float newX = x;
+        float newY = y;
 
-          if (cambio >= 2) { //CAMBIA CADA DOS SEGUNDOS DE DIRECCION
-              direccion = MathUtils.random(0,3);
-              cambio=0;
-          }
-          switch (direccion){
-              case 0: x += 100 * delta;
-              break;
-              case 1: x -= 100 * delta;
-              break;
-              case 2: y += 100 * delta;
-              break;
-              case 3: y -= 100 * delta;
-              break;
+        switch (direccion) {
+            case 0: newX += 100 * delta; break;
+            case 1: newX -= 100 * delta; break;
+            case 2: newY += 100 * delta; break;
+            case 3: newY -= 100 * delta; break;
+        }
 
-          }
-          x = Math.max(0, Math.min(x, 800 - 50));
-          y = Math.max(0, Math.min(y, 480 - 50));
-      }
-  }
+        // Colisión X
+        float bordeX = (newX > x) ? newX + 50 : newX;
+        int filaX = (int)((y - 134) / 36);
+        int colX  = (int)((bordeX - 124) / 52);
+        if (mapa.CaminarCelda(filaX, colX)) {
+            x = newX;
+        } else {
+            if (tipo == HORIZONTAL) {
+                direccion = (direccion == 0) ? 1 : 0; // rebota
+            } else {
+                direccion = MathUtils.random(0, 3);
+                tiempoCambio = 0;
+            }
+        }
+
+        // Colisión Y (solo el aleatorio se mueve en Y)
+        if (tipo == ALEATORIO) {
+            int filaY = (int)((newY - 134) / 36);
+            int colY  = (int)(((x + 25) - 124) / 52);
+            if (mapa.CaminarCelda(filaY, colY)) {
+                y = newY;
+            } else {
+                direccion = MathUtils.random(0, 3);
+                tiempoCambio = 0;
+            }
+        }
+    }
+}
