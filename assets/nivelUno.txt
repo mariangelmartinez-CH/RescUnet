@@ -76,3 +76,17 @@ arbusto,835,260
 arbusto, 885,260
 arbusto, 935,260
 arbusto, 796,210
+
+#Mariposas Azules, lado izquierdo
+mariposa, 293, 368,0
+mariposa, 293, 318,0
+mariposa, 293, 268,0
+#Mariposas Azules, lado derechp
+mariposa, 1065,368,0
+mariposa, 1065,318,0
+mariposa, 1065,268,0
+
+#Mariposas Amarillas, lado derecho
+mariposa, 215, 463,1
+mariposa, 165, 160,1
+mariposa, 472,315,1

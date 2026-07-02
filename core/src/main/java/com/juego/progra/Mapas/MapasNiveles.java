@@ -9,10 +9,13 @@ import java.util.ArrayList;
 
 public class MapasNiveles {
     private ArrayList<Objetos> Listaobjetos;
+    private float tiempo=0;
     private Texture arbusto;
     private Texture arbustoFlores;
     private Texture fondo;
     private Texture valla,invernadero;
+    private Texture fotosMariposa[][];
+    private int faseMariposa = 1;
 
     //Constructor
     public MapasNiveles() {
@@ -22,6 +25,15 @@ public class MapasNiveles {
         Listaobjetos = new ArrayList<>();
         arbusto = new Texture("Arbusto.png");
         arbustoFlores = new Texture("ArbustoFlores.png");
+
+        //Matriz Mariposas
+        fotosMariposa = new Texture[3][3];
+        String[] colores={"azul","amarillo","rosa"};
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                fotosMariposa[i][j] = new Texture(colores[i]+(j+1)+".PNG");
+            }
+        }
 
         cargarArchivo("nivelUno.txt");
     }
@@ -43,18 +55,21 @@ public class MapasNiveles {
                 int x = Integer.parseInt(datos[1].trim());
                 int y = Integer.parseInt(datos[2].trim());
 
-                Texture imagen= null;
-                switch (tipoObj.toLowerCase()){
+                Objetos objTemp = null;
+                switch (tipoObj){
                     case "arbusto":
-                        imagen = arbusto;
+                        objTemp = new Objetos(arbusto,x,y,70,70,tipoObj);
+                        Listaobjetos.add(objTemp);
                         break;
                     case "arbusto_flores":
-                        imagen = arbustoFlores;
+                        objTemp = new Objetos(arbustoFlores,x,y,70,70,tipoObj);
+                        Listaobjetos.add(objTemp);
                         break;
-                }
-                if(imagen!=null){
-                    Objetos ObjTemp = new Objetos(imagen,x,y,70,70,tipoObj);
-                    Listaobjetos.add(ObjTemp);
+                    case "mariposa":
+                        int color = Integer.parseInt(datos[3].trim());
+                        objTemp = new Objetos(fotosMariposa[color],x,y,60,60,tipoObj,color);
+                        Listaobjetos.add(objTemp);
+                        break;
                 }
 
             }
@@ -71,21 +86,41 @@ public class MapasNiveles {
         }
         return true;
     }
-
+    public void CambioFase(){
+        boolean existeColor = false;
+        for (int i = 0; i < Listaobjetos.size(); i++) {
+            Objetos obj = Listaobjetos.get(i);
+            if(obj.tipo.equals("mariposa") && obj.colorMariposa==faseMariposa){
+                existeColor=true;
+                break;
+            }
+        }
+        if(!existeColor && faseMariposa<2){
+            faseMariposa++;
+            System.out.println("Clase de Mariposa recolectada");
+        }
+    }
     public void obtenerObjeto (Rectangle rectanguloPersonaje){
         for (int i = Listaobjetos.size() - 1; i >= 0; i--) {
             Objetos obj = Listaobjetos.get(i);
-            if (obj.recogible && rectanguloPersonaje.overlaps(obj.cajaObstaculo)){
+            if (obj.recogible && obj.colorMariposa==faseMariposa && rectanguloPersonaje.overlaps(obj.cajaObstaculo)){
                 Listaobjetos.remove(i);
-                break;
+                CambioFase();
             }
         }
     }
     public void dibujar (SpriteBatch batch){
         batch.draw(fondo,0,0,1408,768);
+        tiempo += Gdx.graphics.getDeltaTime();
         for (int i = 0; i < Listaobjetos.size(); i++) {
             Objetos obj = Listaobjetos.get(i);
-            obj.dibujar(batch);
+            if(obj.tipo.equals("mariposa")){
+                if(obj.colorMariposa==faseMariposa) {
+                    obj.dibujarM(batch,tiempo);
+                }
+            }else {
+                obj.dibujar(batch);
+            }
         }
         batch.draw(valla,0,0,1408,768);
         batch.draw(invernadero,454,257,510,260);
@@ -94,5 +129,12 @@ public class MapasNiveles {
     public void dipose() {
         arbusto.dispose();
         arbustoFlores.dispose();
+        valla.dispose();
+        invernadero.dispose();
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                fotosMariposa[i][j].dispose();
+            }
+        }
     }
 }
