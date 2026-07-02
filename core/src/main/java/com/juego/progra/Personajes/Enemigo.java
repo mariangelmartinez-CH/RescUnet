@@ -1,8 +1,7 @@
 package com.juego.progra.Personajes;
 import com.juego.progra.Mapas.MapasNiveles;
-import com.badlogic.gdx.math.MathUtils;
 
-  public class Enemigo extends Personaje {
+public class Enemigo extends Personaje {
 
       public Enemigo(float x, float y) {
           super(x, y, "personaje.png.png");//POR AHORA USAMOS LA MISMA IMAGEN DEL JUGADOR PARA LLENAR EL CONSTRUCTOR LUEGO LE PONEOS UNA DIFERENTE
@@ -14,7 +13,7 @@ import com.badlogic.gdx.math.MathUtils;
 
       @Override
       public void actualizar(MapasNiveles mapa, float delta) {
-          cambio+=delta;
+          /*cambio+=delta;
 
           if (cambio >= 2) { //CAMBIA CADA DOS SEGUNDOS DE DIRECCION
               direccion = MathUtils.random(0,3);
@@ -32,6 +31,6 @@ import com.badlogic.gdx.math.MathUtils;
 
           }
           x = Math.max(0, Math.min(x, 800 - 50));
-          y = Math.max(0, Math.min(y, 480 - 50));
+          y = Math.max(0, Math.min(y, 480 - 50));*/
       }
   }
