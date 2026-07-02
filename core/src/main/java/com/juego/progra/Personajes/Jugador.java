@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.juego.progra.Mapas.MapasNiveles;
 
+
 public class Jugador extends Personaje{
     private int vidas=5;
     private float tiempoSinPerderVidas = 0;
@@ -13,7 +14,7 @@ public class Jugador extends Personaje{
 
     @Override
     public void actualizar(MapasNiveles mapa, float delta) {
-        if (tiempoSinPerderVidas > 0) tiempoSinPerderVidas -= delta;
+        /*if (tiempoSinPerderVidas > 0) tiempoSinPerderVidas -= delta;
 
         // MOVIMIENTO EN X
         float newX = x;
@@ -56,6 +57,6 @@ public class Jugador extends Personaje{
     }
     public boolean estaVivo(){
         return vidas > 0;
+    }*/
     }
-
 }
