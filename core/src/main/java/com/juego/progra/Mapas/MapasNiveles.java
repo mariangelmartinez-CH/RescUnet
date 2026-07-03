@@ -16,7 +16,14 @@ public class MapasNiveles {
     private Texture valla,invernadero;
     private Texture fotosMariposa[][];
     private int faseMariposa = 1;
-
+    //VARIBLES LIMITES QUE NECESITO PARA CAMINAR_CELDA
+    private static final float LIMITE_IZQ = 125;
+    private static final float LIMITE_DER = 1279;
+    private static final float LIMITE_ABAJO = 140;
+    private static final float LIMITE_ARRIBA = 615;
+    //AL FINAL SI LE HICE RECTANGULO AL INVERNADERO PERO UNO DENTRO DE OTRO
+    private static final Rectangle invernaderoCaja = new Rectangle(610, 320, 189, 177);
+    private static final Rectangle invernaderoCajaTecho = new Rectangle(667, 477, 75, 40); // 40 = 517 - 477
     //Constructor
     public MapasNiveles() {
         fondo = new Texture("Fondo.png");
@@ -78,8 +85,22 @@ public class MapasNiveles {
     }
 
     public boolean CaminarCelda(Rectangle rectanguloPersonaje){
+        // LIMITES DEL MUNDO, CALCLA LA ARENA DENTRO DE LA REJA
+        if (rectanguloPersonaje.x < LIMITE_IZQ ||
+            rectanguloPersonaje.x + rectanguloPersonaje.width > LIMITE_DER ||
+            rectanguloPersonaje.y < LIMITE_ABAJO ||
+            rectanguloPersonaje.y + rectanguloPersonaje.height > LIMITE_ARRIBA) {
+            return false;
+        }
+
+        // INVERNADERO
+        if (rectanguloPersonaje.overlaps(invernaderoCaja) || rectanguloPersonaje.overlaps(invernaderoCajaTecho)) {
+            return false;
+        }
+
+        //LO DE LOS ARBUSTOS QUE YA ESTABA
         for (int i = 0; i < Listaobjetos.size(); i++) {
-            Objetos obj =  Listaobjetos.get(i);
+            Objetos obj = Listaobjetos.get(i);
             if (obj.destructible && rectanguloPersonaje.overlaps(obj.cajaObstaculo)){
                 return false;
             }
