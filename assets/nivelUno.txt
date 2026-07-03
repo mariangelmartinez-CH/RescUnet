@@ -90,3 +90,25 @@ mariposa, 1065,268,0
 mariposa, 215, 463,1
 mariposa, 165, 160,1
 mariposa, 472,315,1
+mariposa, 630,170,1
+#Mariposas AMrillas, lado izquierdo
+mariposa, 1138, 463,1
+mariposa, 1185, 160,1
+mariposa, 885,315,1
+mariposa, 730,170,1
+
+#Mariposas Rosa, lado derecho
+mariposa, 655,463,2
+mariposa, 715,463,2
+mariposa, 445,318,2
+mariposa, 495,318,2
+mariposa, 918,318,2
+mariposa, 868,318,2
+mariposa, 495,318,2
+mariposa, 193,438,2
+mariposa, 193,190,2
+mariposa, 390,418,2
+#Lado Izquierdo
+mariposa, 1168,438,2
+mariposa, 1168,190,2
+mariposa, 920,218,2

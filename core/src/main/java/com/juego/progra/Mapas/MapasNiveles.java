@@ -15,7 +15,7 @@ public class MapasNiveles {
     private Texture fondo;
     private Texture valla,invernadero;
     private Texture fotosMariposa[][];
-    private int faseMariposa = 1;
+    private int faseMariposa = 2;
 
     //Constructor
     public MapasNiveles() {
