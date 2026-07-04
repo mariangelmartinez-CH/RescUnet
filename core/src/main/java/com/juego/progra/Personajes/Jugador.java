@@ -14,32 +14,27 @@ public class Jugador extends Personaje{
 
     @Override
     public void actualizar(MapasNiveles mapa, float delta) {
-        /*if (tiempoSinPerderVidas > 0) tiempoSinPerderVidas -= delta;
+        if (tiempoSinPerderVidas > 0) tiempoSinPerderVidas -= delta;
 
         // MOVIMIENTO EN X
         float newX = x;
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) newX += 200 * delta;
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT))  newX -= 200 * delta;
+        if (mapa.CaminarCelda(caja(newX, y))) x = newX;
 
-        float bordeX = (newX >= x) ? newX + 50 : newX;
-        int filaX = (int)((y - 134) / 36);
-        int colX  = (int)((bordeX - 124) / 52);
-        if (mapa.CaminarCelda(filaX, colX)) x = newX;
-
-        // MOVIMIENTO EN Y SOLO LOS PIES (newY)
+        // MOVIMIENTO EN Y
         float newY = y;
         if (Gdx.input.isKeyPressed(Input.Keys.UP))   newY += 200 * delta;
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN))  newY -= 200 * delta;
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) newY -= 200 * delta;
+        if (mapa.CaminarCelda(caja(x, newY))) y = newY;
 
-        int filaY = (int)((newY - 134) / 36);
-        int colY  = (int)(((x + 25) - 124) / 52);
-        if (mapa.CaminarCelda(filaY, colY)) y = newY;
+        mapa.obtenerObjeto(caja(x, y));
     }
 
     public void perderVida(){
         if (tiempoSinPerderVidas <= 0) {
             vidas--;
-            tiempoSinPerderVidas = 2;// 2 SEGUNDOS SIN PERDER VIDA
+            tiempoSinPerderVidas = 2;
         }
     }
 
@@ -47,7 +42,8 @@ public class Jugador extends Personaje{
         if (tiempoSinPerderVidas <= 0) {
             vidas--;
             tiempoSinPerderVidas = 2;
-            x = 384; y = 458; // POSICION VALIDA DENTRO DEL MAPA
+            x = 220; y = 300;
+            Gdx.app.log("JUEGO", "Vidas restantes: " + vidas);
         }
     }
 
@@ -56,6 +52,5 @@ public class Jugador extends Personaje{
     }
     public boolean estaVivo(){
         return vidas > 0;
-    }*/
     }
 }

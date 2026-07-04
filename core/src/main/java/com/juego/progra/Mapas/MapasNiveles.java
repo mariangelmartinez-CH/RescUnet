@@ -3,6 +3,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.juego.progra.Personajes.Jugador;
 
 import java.sql.ClientInfoStatus;
 import java.util.ArrayList;
@@ -13,15 +14,27 @@ public class MapasNiveles {
     private Texture arbusto;
     private Texture arbustoFlores;
     private Texture fondo;
-    private Texture valla,invernadero;
+    private Texture vallaInferior,vallaSuperior;
+    private Texture invernaderoTecho, invernaderoPiso;
     private Texture fotosMariposa[][];
-    private int faseMariposa = 2;
+    private int faseMariposa = 0;
+
+    //VARIBLES LIMITES QUE NECESITO PARA CAMINAR_CELDA
+    private static final float LIMITE_IZQ = 125;
+    private static final float LIMITE_DER = 1279;
+    private static final float LIMITE_ABAJO = 140;
+    private static final float LIMITE_ARRIBA = 615;
+    //AL FINAL SI LE HICE RECTANGULO AL INVERNADERO PERO UNO DENTRO DE OTRO
+    private static final Rectangle invernaderoCaja = new Rectangle(610, 320, 189, 177);
+    private static final Rectangle invernaderoCajaTecho = new Rectangle(667, 477, 75, 40); // 40 = 517 - 477
 
     //Constructor
     public MapasNiveles() {
         fondo = new Texture("Fondo.png");
-        valla = new Texture("Valla.png");
-        invernadero = new Texture("Invernadero.png");
+        vallaInferior = new Texture("VallaInferior.png");
+        vallaSuperior = new Texture("VallaSuperior.png");
+        invernaderoTecho = new Texture("InvernaderoTecho.png");
+        invernaderoPiso = new Texture("InvernaderoPiso.png");
         Listaobjetos = new ArrayList<>();
         arbusto = new Texture("Arbusto.png");
         arbustoFlores = new Texture("ArbustoFlores.png");
@@ -78,8 +91,22 @@ public class MapasNiveles {
     }
 
     public boolean CaminarCelda(Rectangle rectanguloPersonaje){
+        // LIMITES DEL MUNDO, CALCLA LA ARENA DENTRO DE LA REJA
+        if (rectanguloPersonaje.x < LIMITE_IZQ ||
+            rectanguloPersonaje.x + rectanguloPersonaje.width > LIMITE_DER ||
+            rectanguloPersonaje.y < LIMITE_ABAJO ||
+            rectanguloPersonaje.y + rectanguloPersonaje.height > LIMITE_ARRIBA) {
+            return false;
+        }
+
+        // INVERNADERO
+        if (rectanguloPersonaje.overlaps(invernaderoCaja) || rectanguloPersonaje.overlaps(invernaderoCajaTecho)) {
+            return false;
+        }
+
+        //LO DE LOS ARBUSTOS QUE YA ESTABA
         for (int i = 0; i < Listaobjetos.size(); i++) {
-            Objetos obj =  Listaobjetos.get(i);
+            Objetos obj = Listaobjetos.get(i);
             if (obj.destructible && rectanguloPersonaje.overlaps(obj.cajaObstaculo)){
                 return false;
             }
@@ -109,28 +136,44 @@ public class MapasNiveles {
             }
         }
     }
-    public void dibujar (SpriteBatch batch){
+
+    //Método hecho para no repetir codigo en el metodo dibujar
+    public void dibujarObjetos (SpriteBatch batch, Objetos obj){
+        if (obj.tipo.equals("mariposa")) {
+            if (obj.colorMariposa == faseMariposa) {
+                obj.dibujarM(batch, tiempo);
+            }
+        } else {
+            obj.dibujar(batch);
+        }
+    }
+    public void dibujar (SpriteBatch batch, Jugador jugador){
         batch.draw(fondo,0,0,1408,768);
+        batch.draw(vallaSuperior,0,0,1408,768);
+        batch.draw(invernaderoPiso,454,257,510,260);
         tiempo += Gdx.graphics.getDeltaTime();
-        for (int i = 0; i < Listaobjetos.size(); i++) {
-            Objetos obj = Listaobjetos.get(i);
-            if(obj.tipo.equals("mariposa")){
-                if(obj.colorMariposa==faseMariposa) {
-                    obj.dibujarM(batch,tiempo);
-                }
-            }else {
-                obj.dibujar(batch);
+        for (Objetos obj : Listaobjetos) {
+            if(obj.cajaObstaculo.y > jugador.getY()){
+                dibujarObjetos(batch,obj);
             }
         }
-        batch.draw(valla,0,0,1408,768);
-        batch.draw(invernadero,454,257,510,260);
+        jugador.dibujar(batch);
+        for (Objetos obj : Listaobjetos) {
+            if (obj.cajaObstaculo.y <= jugador.getY()) {
+                dibujarObjetos(batch, obj);
+            }
+        }
+        batch.draw(vallaInferior,0,0,1408,768);
+        batch.draw(invernaderoTecho,454,257,510,260);
     }
 
     public void dipose() {
         arbusto.dispose();
         arbustoFlores.dispose();
-        valla.dispose();
-        invernadero.dispose();
+        vallaSuperior.dispose();
+        vallaInferior.dispose();
+        invernaderoTecho.dispose();
+        invernaderoPiso.dispose();
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 fotosMariposa[i][j].dispose();
