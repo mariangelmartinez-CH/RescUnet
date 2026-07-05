@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.juego.progra.Personajes.Jugador;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
