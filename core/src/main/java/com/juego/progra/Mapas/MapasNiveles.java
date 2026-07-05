@@ -23,7 +23,7 @@ public class MapasNiveles {
     private static final float LIMITE_IZQ = 125;
     private static final float LIMITE_DER = 1279;
     private static final float LIMITE_ABAJO = 140;
-    private static final float LIMITE_ARRIBA = 615;
+    private static final float LIMITE_ARRIBA = 590;
     //AL FINAL SI LE HICE RECTANGULO AL INVERNADERO PERO UNO DENTRO DE OTRO
     private static final Rectangle invernaderoCaja = new Rectangle(610, 320, 189, 177);
     private static final Rectangle invernaderoCajaTecho = new Rectangle(667, 477, 75, 40); // 40 = 517 - 477

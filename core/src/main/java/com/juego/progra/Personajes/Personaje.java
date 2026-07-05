@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Rectangle;
 public abstract class Personaje {
     protected float x,y;
     protected Texture imagen;
-    protected float cajaTamañito = 15;
+    protected float cajaTamañito = 10;
 
     //Constructor
     public Personaje(float x, float y, String rutaImagen) {
