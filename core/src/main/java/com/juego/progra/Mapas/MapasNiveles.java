@@ -3,12 +3,30 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.juego.progra.Personajes.Enemigo;
 import com.juego.progra.Personajes.Jugador;
 
-import java.sql.ClientInfoStatus;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class MapasNiveles {
+
+    //Clase Interna Creada para poder meter todos los objetos del mapa en un solo arraylist
+    //Sin importar si es jugador, enemigo, o objeto todos son dibujables
+    private class Dibujable{
+        public Object obj;
+        public float cY;
+
+        //Constructor
+
+        public Dibujable(Object obj,float cY) {
+            this.obj = obj;
+            this.cY= cY;
+        }
+    }
+
+    //Variables
     private ArrayList<Objetos> Listaobjetos;
     private float tiempo=0;
     private Texture arbusto;
@@ -60,7 +78,8 @@ public class MapasNiveles {
             String contenidoArchivo = Gdx.files.internal(archivo).readString();
             String[] lineas = contenidoArchivo.split("\n");
             for(String linea : lineas){
-                if(linea.trim().isEmpty() || linea.trim().startsWith("#")) continue; // Agregamos .trim() aquí también
+                if(linea.trim().isEmpty() || linea.trim().startsWith("#"))
+                    continue;
 
                 String[] datos = linea.split(",");
                 String tipoObj = datos[0].trim();
@@ -113,6 +132,7 @@ public class MapasNiveles {
         }
         return true;
     }
+
     public void CambioFase(){
         boolean existeColor = false;
         for (int i = 0; i < Listaobjetos.size(); i++) {
@@ -147,20 +167,32 @@ public class MapasNiveles {
             obj.dibujar(batch);
         }
     }
-    public void dibujar (SpriteBatch batch, Jugador jugador){
+    public void dibujar (SpriteBatch batch, Jugador jugador, List<Enemigo> enemigos){
         batch.draw(fondo,0,0,1408,768);
         batch.draw(vallaSuperior,0,0,1408,768);
         batch.draw(invernaderoPiso,454,257,510,260);
+
         tiempo += Gdx.graphics.getDeltaTime();
-        for (Objetos obj : Listaobjetos) {
-            if(obj.cajaObstaculo.y > jugador.getY()){
-                dibujarObjetos(batch,obj);
-            }
+        ArrayList<Dibujable> arrayDibujo = new ArrayList<>();
+
+        for(Objetos obj : Listaobjetos ){
+            arrayDibujo.add(new Dibujable(obj, obj.cajaObstaculo.y));
         }
-        jugador.dibujar(batch);
-        for (Objetos obj : Listaobjetos) {
-            if (obj.cajaObstaculo.y <= jugador.getY()) {
-                dibujarObjetos(batch, obj);
+        for (Enemigo ene : enemigos){
+            arrayDibujo.add(new Dibujable(ene, ene.getY()));
+        }
+        arrayDibujo.add(new Dibujable(jugador, jugador.getY()));
+
+        Collections.sort(arrayDibujo, (a,b) -> Float.compare(b.cY,a.cY));
+        for(Dibujable cosa : arrayDibujo){
+            if(cosa.obj instanceof Objetos){
+                dibujarObjetos(batch,(Objetos)cosa.obj);
+            }else if (cosa.obj instanceof Enemigo){
+                Enemigo enem = (Enemigo) cosa.obj;
+                enem.dibujar(batch);
+            }else if (cosa.obj instanceof Jugador){
+                Jugador juga = (Jugador) cosa.obj;
+                juga.dibujar(batch);
             }
         }
         batch.draw(vallaInferior,0,0,1408,768);

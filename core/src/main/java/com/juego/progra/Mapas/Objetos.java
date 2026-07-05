@@ -13,15 +13,23 @@ public class Objetos {
     public int colorMariposa; //0 Azul,  1 Amarillo, 2 Rosa
     public boolean recogible;
     public boolean destructible;
+    public boolean indestructible;
 
-    //Constructor para Objetos Estáticos (no se mueven) Arbustos
+    //Constructor para Objetos Estáticos (Arbustos)
     public Objetos(Texture imagen, int x, int y, int ancho, int largo, String tipo) {
         this.imagen=imagen;
         this.cajaObstaculo = new Rectangle(x,y,ancho,largo);
         this.tipo = tipo;
-
-        this.destructible = true;
         this.recogible = false;
+
+        if(tipo.equals("arbusto")){
+            this.destructible = true;
+            this.indestructible=false;
+        }else if (tipo.equals("arbusto_flores")){
+            this.destructible = false;
+            this.indestructible=true;
+        }
+
     }
 
     //Constructor para Mariposas
