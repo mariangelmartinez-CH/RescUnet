@@ -32,10 +32,15 @@ public class MapasNiveles {
     private Texture arbusto;
     private Texture arbustoFlores;
     private Texture fondo;
+    private Texture panel;
     private Texture vallaInferior,vallaSuperior;
     private Texture invernaderoTecho, invernaderoPiso;
     private Texture fotosMariposa[][];
     private int faseMariposa = 0;
+
+    public int getFaseMariposa() {
+        return faseMariposa;
+    }
 
     //VARIBLES LIMITES QUE NECESITO PARA CAMINAR_CELDA
     private static final float LIMITE_IZQ = 125;
@@ -60,6 +65,7 @@ public class MapasNiveles {
         arbustoFlores = new Texture("ArbustoFlores.png");
         arbustoDano1 = new Texture("rompible_daño2.png");
         arbustoDano2 = new Texture("rompible_daño1.png");
+
 
         //Matriz Mariposas
         fotosMariposa = new Texture[3][3];
@@ -151,11 +157,19 @@ public class MapasNiveles {
             System.out.println("Clase de Mariposa recolectada");
         }
     }
+    private HUD hud;
+
+    public void setHud(HUD hud) {
+        this.hud = hud;
+    }
+
     public void obtenerObjeto (Rectangle rectanguloPersonaje){
         for (int i = Listaobjetos.size() - 1; i >= 0; i--) {
             Objetos obj = Listaobjetos.get(i);
             if (obj.recogible && obj.colorMariposa==faseMariposa && rectanguloPersonaje.overlaps(obj.cajaObstaculo)){
+                int indice = obj.colorMariposa;
                 Listaobjetos.remove(i);
+                hud.CambiarMariposa(indice);
                 CambioFase();
             }
         }
@@ -201,6 +215,7 @@ public class MapasNiveles {
         }
         batch.draw(vallaInferior,0,0,1408,768);
         batch.draw(invernaderoTecho,454,257,510,260);
+       //batch.draw(panel,475,02,450,150);
     }
 
     public Objetos obtenerArbustoRompible(Rectangle rectanguloPersonaje) {
