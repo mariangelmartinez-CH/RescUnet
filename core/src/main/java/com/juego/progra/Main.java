@@ -1,5 +1,6 @@
 package com.juego.progra;
 import com.badlogic.gdx.graphics.Texture;
+import com.juego.progra.Mapas.HUD;
 import com.juego.progra.Mapas.MapasNiveles;
 import com.juego.progra.Personajes.Enemigo;
 import com.badlogic.gdx.Game;
@@ -15,6 +16,7 @@ import java.util.List;
 public class Main extends Game {
     private SpriteBatch batch;
     private MapasNiveles mapa;
+    private HUD HUD;
     private Texture corazonLleno;
     private Texture corazonVacio;
     private Jugador jugador;
@@ -24,8 +26,8 @@ public class Main extends Game {
     public void create(){
         batch = new SpriteBatch();
         mapa = new MapasNiveles();
-        corazonLleno = new Texture("CorazonLleno.png");
-        corazonVacio = new Texture("CorazonVacio.png");
+        HUD = new HUD();
+        mapa.setHud(HUD);
         jugador = new Jugador(220, 300);
 
         enemigos = new ArrayList<>();
@@ -54,22 +56,11 @@ public class Main extends Game {
 
         batch.begin();
         mapa.dibujar(batch,jugador,enemigos);
-        dibujarCorazones(batch, jugador.getVidas());
+        HUD.dibujarCorazones(batch, jugador.getVidas());
         batch.end();
+        HUD.render();
     }
 
-    //Metodo para los corazones
-    public void dibujarCorazones (SpriteBatch batch, int vidasAct){
-        int totalVidas = 5;
-
-        for (int i = 0; i < totalVidas; i++) {
-            if(i < vidasAct){
-                batch.draw(corazonLleno, 1050+(i*60),690,60,60);
-            }else{
-                batch.draw(corazonVacio, 1050+(i*60),690,60,60);
-            }
-        }
-    }
     @Override
     public void dispose() {
         batch.dispose();
