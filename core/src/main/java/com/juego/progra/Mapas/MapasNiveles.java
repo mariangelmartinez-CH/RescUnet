@@ -45,7 +45,9 @@ public class MapasNiveles {
     //AL FINAL SI LE HICE RECTANGULO AL INVERNADERO PERO UNO DENTRO DE OTRO
     private static final Rectangle invernaderoCaja = new Rectangle(610, 320, 189, 177);
     private static final Rectangle invernaderoCajaTecho = new Rectangle(667, 477, 75, 40); // 40 = 517 - 477
-
+    //VARIABLES Y CONSTANTE PARA ROMPER ARBUSTOS
+    public static final float TIEMPO_PARA_ROMPER = 3f;
+    private Texture arbustoDano1, arbustoDano2;
     //Constructor
     public MapasNiveles() {
         fondo = new Texture("Fondo.png");
@@ -56,6 +58,8 @@ public class MapasNiveles {
         Listaobjetos = new ArrayList<>();
         arbusto = new Texture("Arbusto.png");
         arbustoFlores = new Texture("ArbustoFlores.png");
+        arbustoDano1 = new Texture("rompible_daño2.png");
+        arbustoDano2 = new Texture("rompible_daño1.png");
 
         //Matriz Mariposas
         fotosMariposa = new Texture[3][3];
@@ -126,7 +130,7 @@ public class MapasNiveles {
         //LO DE LOS ARBUSTOS QUE YA ESTABA
         for (int i = 0; i < Listaobjetos.size(); i++) {
             Objetos obj = Listaobjetos.get(i);
-            if (obj.destructible && rectanguloPersonaje.overlaps(obj.cajaObstaculo)){
+            if ((obj.destructible || obj.indestructible) && rectanguloPersonaje.overlaps(obj.cajaObstaculo)){
                 return false;
             }
         }
@@ -197,6 +201,112 @@ public class MapasNiveles {
         }
         batch.draw(vallaInferior,0,0,1408,768);
         batch.draw(invernaderoTecho,454,257,510,260);
+    }
+
+    public Objetos obtenerArbustoRompible(Rectangle rectanguloPersonaje) {
+        for (Objetos obj : Listaobjetos) {
+            if (obj.destructible && rectanguloPersonaje.overlaps(obj.cajaObstaculo)) {
+                return obj;
+            }
+        }
+        return null;
+    }
+
+    public void actualizarDañoArbusto(Objetos obj) {
+        if (obj.tiempoDañado >= TIEMPO_PARA_ROMPER * (2f/3f)) {
+            obj.imagen = arbustoDano2;
+        } else if (obj.tiempoDañado >= TIEMPO_PARA_ROMPER * (1f/3f)) {
+            obj.imagen = arbustoDano1;
+        }
+    }
+
+
+
+    public void romperArbusto(Objetos obj) {
+        Listaobjetos.remove(obj);
+    }
+
+    public Objetos obtenerArbustoEnDireccion(Rectangle celda, float xJugador, float yJugador, float dx, float dy) {
+        Objetos masCercano = null;
+        float distanciaMinima = Float.MAX_VALUE;
+        for (Objetos obj : Listaobjetos) {
+            if (!obj.destructible || !celda.overlaps(obj.cajaObstaculo)) continue;
+
+            float centroObjX = obj.cajaObstaculo.x + obj.cajaObstaculo.width / 2f;
+            float centroObjY = obj.cajaObstaculo.y + obj.cajaObstaculo.height / 2f;
+
+            float diffX = centroObjX - xJugador;
+            float diffY = centroObjY - yJugador;
+
+            if (dx != 0) {
+                if (dx > 0 && diffX <= 0) continue;
+                if (dx < 0 && diffX >= 0) continue;
+                if (Math.abs(diffY) > 35) continue;
+            } else {
+                if (dy > 0 && diffY <= 0) continue;
+                if (dy < 0 && diffY >= 0) continue;
+                if (Math.abs(diffX) > 35) continue;
+            }
+
+            float distancia = diffX * diffX + diffY * diffY;
+            if (distancia < distanciaMinima) {
+                distanciaMinima = distancia;
+                masCercano = obj;
+            }
+        }
+        return masCercano;
+    }
+        //ESTO NO FUNCIONA AUN :C
+    public void dispararLinea(float centroX, float centroY, String direccion) {
+        float dx = 0, dy = 0;
+        switch (direccion) {
+            case "derecha": dx = 1; break;
+            case "izquierda": dx = -1; break;
+            case "arriba": dy = 1; break;
+            case "abajo": dy = -1; break;
+        }
+
+        float paso = 5f;
+        float alcanceMax = 70 * 5;
+
+        for (float recorrido = paso; recorrido <= alcanceMax; recorrido += paso) {
+            float cx = centroX + dx * recorrido;
+            float cy = centroY + dy * recorrido;
+
+            Rectangle celdaDeteccion;
+            if (dx != 0) {
+                celdaDeteccion = new Rectangle(cx - 10, centroY - 10, 20, 20);
+            } else {
+                celdaDeteccion = new Rectangle(centroX - 10, cy - 10, 20, 20);
+            }
+
+            Objetos bloqueante = obtenerArbustoEnDireccion(celdaDeteccion, centroX, centroY, dx, dy);
+            if (bloqueante != null) {
+                bloqueante.tiempoDañado += TIEMPO_PARA_ROMPER / 3f;
+                actualizarDañoArbusto(bloqueante);
+                if (bloqueante.tiempoDañado >= TIEMPO_PARA_ROMPER) {
+                    romperArbusto(bloqueante);
+                }
+                return;
+            }
+
+            if (!CaminarCelda(celdaDeteccion)) {
+                return;
+            }
+        }
+
+        for (int i = 1; i <= 5; i++) {
+            float distancia = 70f * i;
+            float px = centroX + dx * distancia;
+            float py = centroY + dy * distancia;
+            Rectangle celdaCrear = new Rectangle(px - 35, py - 35, 70, 70);
+
+            if (CaminarCelda(celdaCrear)) {
+                Listaobjetos.add(new Objetos(arbusto, (int) (px - 35), (int) (py - 35), 70, 70, "arbusto"));
+            } else {
+                break;
+            }
+        }
     }
 
     public void dipose() {

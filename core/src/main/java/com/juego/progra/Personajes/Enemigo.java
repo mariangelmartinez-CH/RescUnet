@@ -1,14 +1,15 @@
 package com.juego.progra.Personajes;
-
+import com.juego.progra.Mapas.Objetos;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.juego.progra.Mapas.MapasNiveles;
-
+import com.badlogic.gdx.math.Rectangle;
 public class Enemigo extends Personaje {
 
     public enum Tipo { HORIZONTAL, ALEATORIO }
 
     private Tipo tipo;
+    private boolean puedeRomperArbustos = false;
     private float velocidad = 100;
     private int direccionX = 1;
     private float cambio = 0;
@@ -18,6 +19,7 @@ public class Enemigo extends Personaje {
     private Texture[] izquierda = new Texture[3];
     private Texture[] arriba = new Texture[3];
     private Texture[] abajo = new Texture[3];
+
 
     public Enemigo(float x, float y, Tipo tipo) {
         super(x, y, "villano_down1.png");
@@ -61,11 +63,27 @@ public class Enemigo extends Personaje {
         }
     }
 
+    private boolean intentarRomperArbusto(MapasNiveles mapa, Rectangle celda, float delta) {
+        Objetos bloqueante = mapa.obtenerArbustoRompible(celda);
+        if (bloqueante != null) {
+            bloqueante.tiempoDañado += delta;
+            mapa.actualizarDañoArbusto(bloqueante);
+            if (bloqueante.tiempoDañado >= MapasNiveles.TIEMPO_PARA_ROMPER) {
+                mapa.romperArbusto(bloqueante);
+            }
+            return true;
+        }
+        return false;
+    }
+
     private void actualizarHorizontal(MapasNiveles mapa, float delta) {
         float newX = x + direccionX * velocidad * delta;
         if (mapa.CaminarCelda(caja(newX, y))) {
             x = newX;
         } else {
+            if (puedeRomperArbustos && intentarRomperArbusto(mapa, caja(newX, y), delta)) {
+                return;
+            }
             direccionX *= -1;
         }
     }
@@ -89,6 +107,9 @@ public class Enemigo extends Personaje {
             x = newX;
             y = newY;
         } else {
+            if (puedeRomperArbustos && intentarRomperArbusto(mapa, caja(newX, newY), delta)) {
+                return;
+            }
             cambio = 2;
         }
     }
