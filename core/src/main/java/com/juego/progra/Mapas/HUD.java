@@ -5,26 +5,38 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class HUD {
-    //Corazones
+    // Corazones
     private Texture corazonLleno;
     private Texture corazonVacio;
-    //Mariposas
-    private Texture[] mariposasGris;
-    private Texture[] mariposasColor;
-    //Panel
+
+    // Texturas pre-cargadas por nivel (Evita fugas de memoria)
+    private Texture[] grisNivel1, colorNivel1;
+    private Texture[] grisNivel2, colorNivel2;
+
+    private final int[] posX_M = {65, 182, 278};
+    private final int[] posY_M = {17, 18, 3};
+    private final int[] size_M = {75, 75, 95};
+
+    private final int[] posX_C = {65, 183, 288};
+    private final int[] posY_C = {11, 10, 11};
+    private final int[] size_C = {75, 78, 78};
+
+
+    private Texture[] ItemsGris = new Texture[3];
+    private Texture[] ItemsColor = new Texture[3];
+
+    // Panel
     private Stage stage;
     private Table tablaPanel;
-    private Image[] mariposas;
-    private Group grupoMariposas;
+    private Image[] items;
+    private Group grupoItems;
     private Texture[] texturaPaneles;
-
 
     public HUD() {
         corazonLleno = new Texture("CorazonLleno.png");
@@ -40,38 +52,53 @@ public class HUD {
         tablaPanel = new Table();
         tablaPanel.setBackground(new TextureRegionDrawable(new TextureRegion(texturaPaneles[0])));
         tablaPanel.setSize(450, 150);
-        tablaPanel.setSize(450, 150);
         tablaPanel.setPosition(475, 2);
         stage.addActor(tablaPanel);
 
-        grupoMariposas = new Group();
-        grupoMariposas.setPosition(475, 2);
-        stage.addActor(grupoMariposas);
+        grupoItems = new Group();
+        grupoItems.setPosition(475, 2);
+        stage.addActor(grupoItems);
 
-        mariposasGris = new Texture[]{
+        //Mariposas
+        grisNivel1 = new Texture[]{
             new Texture("azulGris.png"),
             new Texture("amarilloGris.png"),
             new Texture("rosaGris.png")
         };
-        mariposasColor = new Texture[]{
+        colorNivel1 = new Texture[]{
             new Texture("azul1.PNG"),
             new Texture("amarillo1.PNG"),
             new Texture("rosa1.PNG")
         };
 
-        mariposas = new Image[3];
-        int[] posX = {65, 182, 278};
-        int[] posY = {17, 18, 3};
-        int[] size = {75, 75, 95};
+        //Conejos
+        grisNivel2 = new Texture[]{
+            new Texture("negroGris.png"),
+            new Texture("marronGris.png"),
+            new Texture("beigeGris.png")
+        };
+        colorNivel2 = new Texture[]{
+            new Texture("negro1.PNG"),
+            new Texture("marron1.PNG"),
+            new Texture("beige1.PNG")
+        };
+
+        // Por defecto arrancamos con el Nivel 1
+        for (int i = 0; i < 3; i++) {
+            ItemsGris[i] = grisNivel1[i];
+            ItemsColor[i] = colorNivel1[i];
+        }
+
+        items = new Image[3];
 
         for (int i = 0; i < 3; i++) {
-            mariposas[i] = new Image(mariposasGris[i]);
-            mariposas[i].setBounds(posX[i], posY[i], size[i], size[i]);
-            grupoMariposas.addActor(mariposas[i]);
+            items[i] = new Image(ItemsGris[i]);
+            items[i].setBounds(posX_M[i], posY_M[i], size_M[i], size_M[i]);
+            grupoItems.addActor(items[i]);
         }
     }
 
-    //Para dibujar los corazones
+    // Para dibujar los corazones
     public void dibujarCorazones (SpriteBatch batch, int vidasAct){
         int totalVidas = 5;
 
@@ -84,16 +111,15 @@ public class HUD {
         }
     }
 
-    //Este metodo se llama es en MapaNiveles oBTENERoBJETO(), no en el main
     private int[] recogidas = {0, 0, 0};
     private int[] total = {6, 8, 13};
 
-    public void CambiarMariposa(int indice) {
+    public void CambiarItem(int indice) {
         if (indice >= 0 && indice < 3) {
-            recogidas[indice]++; // Sumamos una más a este color
+            recogidas[indice]++;
 
             if (recogidas[indice] >= total[indice]) {
-                mariposas[indice].setDrawable(new TextureRegionDrawable(mariposasColor[indice]));
+                items[indice].setDrawable(new TextureRegionDrawable(ItemsColor[indice]));
 
                 if (indice + 1 < texturaPaneles.length) {
                     tablaPanel.setBackground(new TextureRegionDrawable(new TextureRegion(texturaPaneles[indice + 1])));
@@ -102,8 +128,46 @@ public class HUD {
         }
     }
 
+    public void actualizarHud(int nivel){
+        recogidas = new int[]{0, 0, 0};
+        tablaPanel.setBackground(new TextureRegionDrawable(new TextureRegion(texturaPaneles[0])));
+
+        // Elegimos qué configuración usar
+        int[] posYActual = (nivel == 1) ? posY_M : posY_C;
+        int[] sizeActual = (nivel == 1) ? size_M : size_C;
+        int[] posXActual = (nivel == 1) ? posX_M : posX_C;
+
+        if (nivel == 1) {
+            for (int i = 0; i < 3; i++) {
+                ItemsGris[i] = grisNivel1[i];
+                ItemsColor[i] = colorNivel1[i];
+            }
+        } else if (nivel == 2) {
+            for (int i = 0; i < 3; i++) {
+                ItemsGris[i] = grisNivel2[i];
+                ItemsColor[i] = colorNivel2[i];
+            }
+        }
+
+        for (int i = 0; i < 3; i++) {
+            items[i].setDrawable(new TextureRegionDrawable(ItemsGris[i]));
+            items[i].setBounds(posXActual[i], posYActual[i], sizeActual[i], sizeActual[i]);
+        }
+    }
+
     public void render(){
         stage.act();
         stage.draw();
+    }
+
+    public void dispose() {
+        stage.dispose();
+        corazonLleno.dispose();
+        corazonVacio.dispose();
+        for(Texture t : texturaPaneles) t.dispose();
+        for(Texture t : grisNivel1) t.dispose();
+        for(Texture t : colorNivel1) t.dispose();
+        for(Texture t : grisNivel2) t.dispose();
+        for(Texture t : colorNivel2) t.dispose();
     }
 }

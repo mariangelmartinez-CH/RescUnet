@@ -32,14 +32,13 @@ public class MapasNiveles {
     private Texture arbusto;
     private Texture arbustoFlores;
     private Texture fondo;
-    private Texture panel;
     private Texture vallaInferior,vallaSuperior;
     private Texture invernaderoTecho, invernaderoPisoC, invernaderoPisoA,invernaderoActual;
-    private Texture fotosMariposa[][];
-    private int faseMariposa = 0;
+    private Texture fotosItem[][];
+    private int faseItem = 0;
 
-    public int getFaseMariposa() {
-        return faseMariposa;
+    public int getFaseItem() {
+        return faseItem;
     }
 
     //VARIBLES LIMITES QUE NECESITO PARA CAMINAR_CELDA
@@ -53,36 +52,28 @@ public class MapasNiveles {
 
     //Constructor
     public MapasNiveles() {
-        fondo = new Texture("Fondo.png");
-        vallaInferior = new Texture("VallaInferior.png");
-        vallaSuperior = new Texture("VallaSuperior.png");
         invernaderoTecho = new Texture("InvernaderoTecho.png");
         invernaderoPisoC = new Texture("InvernaderoPiso_Cerrado.png");
         invernaderoPisoA = new Texture("InvernaderoPiso.png");
-        invernaderoActual=invernaderoPisoC;
+        invernaderoActual = invernaderoPisoC;
+
         Listaobjetos = new ArrayList<>();
-        arbusto = new Texture("Arbusto.png");
-        arbustoFlores = new Texture("ArbustoFlores.png");
-
-
-        //Matriz Mariposas
-        fotosMariposa = new Texture[3][3];
-        String[] colores={"azul","amarillo","rosa"};
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                fotosMariposa[i][j] = new Texture(colores[i]+(j+1)+".PNG");
-            }
-        }
-
-        cargarArchivo("nivelUno.txt");
     }
 
-    public void cargarArchivo (String archivo){
+    public void cargarArchivo (String archivo,int nivel){
 
         if (!Gdx.files.internal(archivo).exists()){
             System.out.println("Archivo de Mapa no encontrado");
             return;
         }else{
+
+            int anchoArbs=70;
+            int tamArbusto=70;
+            if(nivel==2) {
+                tamArbusto = 90;
+                anchoArbs=110;
+            }
+
             String contenidoArchivo = Gdx.files.internal(archivo).readString();
             String[] lineas = contenidoArchivo.split("\n");
             for(String linea : lineas){
@@ -98,16 +89,18 @@ public class MapasNiveles {
                 Objetos objTemp = null;
                 switch (tipoObj){
                     case "arbusto":
-                        objTemp = new Objetos(arbusto,x,y,70,70,tipoObj);
+                        objTemp = new Objetos(arbusto,x,y,anchoArbs,tamArbusto,tipoObj);
                         Listaobjetos.add(objTemp);
                         break;
                     case "arbusto_flores":
-                        objTemp = new Objetos(arbustoFlores,x,y,70,70,tipoObj);
+                        objTemp = new Objetos(arbustoFlores,x,y,anchoArbs,tamArbusto,tipoObj);
                         Listaobjetos.add(objTemp);
                         break;
                     case "mariposa":
+                    case "conejo":
+                    case "flor":
                         int color = Integer.parseInt(datos[3].trim());
-                        objTemp = new Objetos(fotosMariposa[color],x,y,60,60,tipoObj,color);
+                        objTemp = new Objetos(fotosItem[color],x,y,60,60,tipoObj,color);
                         Listaobjetos.add(objTemp);
                         break;
                 }
@@ -145,16 +138,16 @@ public class MapasNiveles {
         boolean existeColor = false;
         for (int i = 0; i < Listaobjetos.size(); i++) {
             Objetos obj = Listaobjetos.get(i);
-            if(obj.tipo.equals("mariposa") && obj.colorMariposa==faseMariposa){
+            if((obj.tipo.equals("mariposa") || obj.tipo.equals("conejo") || obj.tipo.equals("flor")) && obj.colorItem == faseItem){
                 existeColor=true;
                 break;
             }
         }
-        if(!existeColor && faseMariposa == 2) {
+        if(!existeColor && faseItem == 2) {
             this.invernaderoActual = invernaderoPisoA;
             System.out.println("Invernadero abierto");
-        } else if(!existeColor && faseMariposa < 2){
-            faseMariposa++;
+        } else if(!existeColor && faseItem < 2){
+            faseItem++;
             System.out.println("Clase de Mariposa recolectada");
         }
     }
@@ -167,10 +160,10 @@ public class MapasNiveles {
     public void obtenerObjeto (Rectangle rectanguloPersonaje){
         for (int i = Listaobjetos.size() - 1; i >= 0; i--) {
             Objetos obj = Listaobjetos.get(i);
-            if (obj.recogible && obj.colorMariposa==faseMariposa && rectanguloPersonaje.overlaps(obj.cajaObstaculo)){
-                int indice = obj.colorMariposa;
+            if (obj.recogible && obj.colorItem ==faseItem && rectanguloPersonaje.overlaps(obj.cajaObstaculo)){
+                int indice = obj.colorItem;
                 Listaobjetos.remove(i);
-                hud.CambiarMariposa(indice);
+                hud.CambiarItem(indice);
                 CambioFase();
             }
         }
@@ -178,8 +171,8 @@ public class MapasNiveles {
 
     //Método hecho para no repetir codigo en el metodo dibujar
     public void dibujarObjetos (SpriteBatch batch, Objetos obj){
-        if (obj.tipo.equals("mariposa")) {
-            if (obj.colorMariposa == faseMariposa) {
+        if (obj.tipo.equals("mariposa") || obj.tipo.equals("conejo") || obj.tipo.equals("flor")) {
+            if (obj.colorItem == faseItem) {
                 obj.dibujarM(batch, tiempo);
             }
         } else {
@@ -189,7 +182,7 @@ public class MapasNiveles {
     public void dibujar (SpriteBatch batch, Jugador jugador, List<Enemigo> enemigos){
         batch.draw(fondo,0,0,1408,768);
         batch.draw(vallaSuperior,0,0,1408,768);
-        batch.draw(invernaderoActual,454,257,510,260);
+        batch.draw(invernaderoActual,465,257,490,260);
 
         tiempo += Gdx.graphics.getDeltaTime();
         ArrayList<Dibujable> arrayDibujo = new ArrayList<>();
@@ -215,22 +208,59 @@ public class MapasNiveles {
             }
         }
         batch.draw(vallaInferior,0,0,1408,768);
-        batch.draw(invernaderoTecho,454,257,510,260);
-       //batch.draw(panel,475,02,450,150);
+        batch.draw(invernaderoTecho,465,257,490,260);
+
     }
 
+    public void cargarNivel (int nivel){
+        Listaobjetos.clear();
+
+        if(fondo != null) fondo.dispose();
+        if(vallaSuperior != null) vallaSuperior.dispose();
+        if(vallaInferior != null) vallaInferior.dispose();
+
+        fondo = new Texture("fondo" + nivel + ".png");
+        vallaSuperior = new Texture("vallaSuperior" + nivel + ".png");
+        vallaInferior = new Texture("vallaInferior" + nivel + ".png");
+        arbusto = new Texture("arbusto"+nivel+".png");
+        arbustoFlores = new Texture("arbustoFlores"+nivel+".png");
+
+        faseItem = 0;
+        invernaderoActual = invernaderoPisoC; // Invernadero siempre inicia cerrado
+
+        fotosItem = new Texture[3][3];
+        if (nivel == 1) {
+            String[] colores = {"azul", "amarillo", "rosa"};
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    fotosItem[i][j] = new Texture(colores[i] + (j + 1) + ".PNG");
+                }
+            }
+        } else if (nivel == 2) {
+            String[] conejos = {"negro", "marron", "beige"};
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    fotosItem[i][j] = new Texture(conejos[i] + (j + 1) + ".PNG");
+                }
+            }
+        }
+        cargarArchivo("nivel"+nivel+".txt",nivel);
+    }
     public void dipose() {
-        arbusto.dispose();
-        arbustoFlores.dispose();
-        vallaSuperior.dispose();
-        vallaInferior.dispose();
-        invernaderoTecho.dispose();
-        invernaderoPisoC.dispose();
-        invernaderoPisoA.dispose();
-        invernaderoActual.dispose();
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                fotosMariposa[i][j].dispose();
+        if(arbusto != null) arbusto.dispose();
+        if(arbustoFlores != null) arbustoFlores.dispose();
+        if(vallaSuperior != null) vallaSuperior.dispose();
+        if(vallaInferior != null) vallaInferior.dispose();
+        if(invernaderoTecho != null) invernaderoTecho.dispose();
+        if(invernaderoPisoC != null) invernaderoPisoC.dispose();
+        if(invernaderoPisoA != null) invernaderoPisoA.dispose();
+        if(fondo != null) fondo.dispose();
+
+        if(fotosItem != null) {
+            for (int i = 0; i < fotosItem.length; i++) {
+                for (int j = 0; j < fotosItem[i].length; j++) {
+                    if(fotosItem[i][j] != null) fotosItem[i][j].dispose();
+                }
             }
         }
     }

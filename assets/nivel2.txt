@@ -1,0 +1,61 @@
+#Izquierda hacia arriba
+arbusto_flores, 105, 100
+arbusto_flores, 105, 172
+arbusto_flores, 105, 244
+arbusto_flores, 105, 316
+arbusto_flores, 105, 388
+
+#Izquierda hacia al lado
+arbusto_flores, 170, 100
+arbusto_flores, 235, 100
+arbusto_flores, 300, 100
+arbusto_flores, 365, 100
+arbusto_flores, 430, 100
+arbusto_flores, 495, 100
+
+#Derecha hacia abajo
+arbusto_flores, 1185, 585
+arbusto_flores, 1185, 513
+arbusto_flores, 1185, 441
+arbusto_flores, 1185, 369
+
+#Derecha hacia a un lado
+arbusto_flores, 1185, 585
+arbusto_flores, 1120, 585
+arbusto_flores, 1055, 585
+arbusto_flores,  990, 585
+arbusto_flores,  925, 585
+arbusto_flores,  860, 585
+
+#Cruz superior izquierda
+#Ar
+arbusto, 300, 513
+arbusto_flores, 365, 513
+#I
+arbusto_flores, 247, 448
+arbusto, 247, 376
+#Ab
+arbusto_flores, 305, 311
+arbusto, 370, 311
+#D
+arbusto, 425, 448
+arbusto_flores, 425, 376
+
+#Cruz inferior derecha
+#Ab
+arbusto_flores, 990, 172
+arbusto, 925, 172
+#D
+arbusto, 1040, 240
+arbusto_flores, 1040, 312
+#Ar
+arbusto, 985, 375
+arbusto_flores, 920, 375
+#I
+arbusto_flores, 865, 240
+arbusto, 865, 312
+
+#Triangulo Superior Derecha
+arbusto_flores,  795, 527
+arbusto,  860, 462
+arbusto,  735, 462

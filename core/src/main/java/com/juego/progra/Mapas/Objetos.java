@@ -10,7 +10,7 @@ public class Objetos {
     public Texture[] aniMariposas;
     public Rectangle cajaObstaculo;
     public String tipo;
-    public int colorMariposa; //0 Azul,  1 Amarillo, 2 Rosa
+    public int colorItem; //0 Azul,  1 Amarillo, 2 Rosa
     public boolean recogible;
     public boolean destructible;
     public boolean indestructible;
@@ -37,7 +37,7 @@ public class Objetos {
         this.aniMariposas=animacion;
         this.cajaObstaculo = new Rectangle(x,y,ancho,largo);
         this.tipo = tipo;
-        this.colorMariposa = color;
+        this.colorItem = color;
 
         this.destructible =  false;
         this.recogible = true;
