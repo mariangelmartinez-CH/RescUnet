@@ -228,10 +228,8 @@ public class MapasNiveles {
     }
 
     public void actualizarDañoArbusto(Objetos obj) {
-        if (obj.tiempoDañado >= TIEMPO_PARA_ROMPER * (2f/3f)) {
+        if (obj.tiempoDañado >= TIEMPO_PARA_ROMPER * 0.5f) {
             obj.imagen = arbustoDano2;
-        } else if (obj.tiempoDañado >= TIEMPO_PARA_ROMPER * (1f/3f)) {
-            obj.imagen = arbustoDano1;
         }
     }
 
@@ -272,57 +270,47 @@ public class MapasNiveles {
         return masCercano;
     }
         //ESTO NO FUNCIONA AUN :C
-    public void dispararLinea(float centroX, float centroY, String direccion) {
-        float dx = 0, dy = 0;
-        switch (direccion) {
-            case "derecha": dx = 1; break;
-            case "izquierda": dx = -1; break;
-            case "arriba": dy = 1; break;
-            case "abajo": dy = -1; break;
-        }
-
-        float paso = 5f;
-        float alcanceMax = 70 * 5;
-
-        for (float recorrido = paso; recorrido <= alcanceMax; recorrido += paso) {
-            float cx = centroX + dx * recorrido;
-            float cy = centroY + dy * recorrido;
-
-            Rectangle celdaDeteccion;
-            if (dx != 0) {
-                celdaDeteccion = new Rectangle(cx - 10, centroY - 10, 20, 20);
-            } else {
-                celdaDeteccion = new Rectangle(centroX - 10, cy - 10, 20, 20);
+        public void dispararLinea(float centroX, float centroY, String direccion) {
+            float dx = 0, dy = 0;
+            switch (direccion) {
+                case "derecha": dx = 1; break;
+                case "izquierda": dx = -1; break;
+                case "arriba": dy = 1; break;
+                case "abajo": dy = -1; break;
             }
 
-            Objetos bloqueante = obtenerArbustoEnDireccion(celdaDeteccion, centroX, centroY, dx, dy);
-            if (bloqueante != null) {
-                bloqueante.tiempoDañado += TIEMPO_PARA_ROMPER / 3f;
-                actualizarDañoArbusto(bloqueante);
-                if (bloqueante.tiempoDañado >= TIEMPO_PARA_ROMPER) {
-                    romperArbusto(bloqueante);
+            float centroYAjustado = Math.max(LIMITE_ABAJO + 35, Math.min(centroY, LIMITE_ARRIBA - 35));
+            float centroXAjustado = Math.max(LIMITE_IZQ + 35, Math.min(centroX, LIMITE_DER - 35));
+
+            for (int i = 1; i <= 5; i++) {
+                float distancia = 70f * i;
+                float px, py;
+                if (dx != 0) {
+                    px = centroX + dx * distancia;
+                    py = centroYAjustado;
+                } else {
+                    px = centroXAjustado;
+                    py = centroY + dy * distancia;
                 }
-                return;
-            }
+                Rectangle celda = new Rectangle(px - 35, py - 35, 70, 70);
 
-            if (!CaminarCelda(celdaDeteccion)) {
-                return;
+                Objetos bloqueante = obtenerArbustoEnDireccion(celda, centroX, centroY, dx, dy);
+                if (bloqueante != null) {
+                    bloqueante.tiempoDañado += TIEMPO_PARA_ROMPER / 2f;
+                    actualizarDañoArbusto(bloqueante);
+                    if (bloqueante.tiempoDañado >= TIEMPO_PARA_ROMPER) {
+                        romperArbusto(bloqueante);
+                    }
+                    return;
+                }
+
+                if (CaminarCelda(celda)) {
+                    Listaobjetos.add(new Objetos(arbusto, (int) (px - 35), (int) (py - 35), 70, 70, "arbusto"));
+                } else {
+                    return;
+                }
             }
         }
-
-        for (int i = 1; i <= 5; i++) {
-            float distancia = 70f * i;
-            float px = centroX + dx * distancia;
-            float py = centroY + dy * distancia;
-            Rectangle celdaCrear = new Rectangle(px - 35, py - 35, 70, 70);
-
-            if (CaminarCelda(celdaCrear)) {
-                Listaobjetos.add(new Objetos(arbusto, (int) (px - 35), (int) (py - 35), 70, 70, "arbusto"));
-            } else {
-                break;
-            }
-        }
-    }
 
     public void dipose() {
         arbusto.dispose();
