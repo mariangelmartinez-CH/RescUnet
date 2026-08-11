@@ -22,15 +22,24 @@ public class HUD {
     private Stage stage;
     private Table tablaPanel;
     private Image[] mariposas;
-    private Group grupoMariposas; // Nuestro nuevo contenedor de control absoluto
+    private Group grupoMariposas;
+    private Texture[] texturaPaneles;
+
 
     public HUD() {
         corazonLleno = new Texture("CorazonLleno.png");
         corazonVacio = new Texture("CorazonVacio.png");
         stage = new Stage(new ScreenViewport());
 
-        Table tablaPanel = new Table();
-        tablaPanel.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("panelPrimero.png"))));
+        texturaPaneles = new Texture[]{
+            new Texture("panelPrimero.png"),
+            new Texture("panelSegundo.png"),
+            new Texture("panelTercero.png")
+        };
+
+        tablaPanel = new Table();
+        tablaPanel.setBackground(new TextureRegionDrawable(new TextureRegion(texturaPaneles[0])));
+        tablaPanel.setSize(450, 150);
         tablaPanel.setSize(450, 150);
         tablaPanel.setPosition(475, 2);
         stage.addActor(tablaPanel);
@@ -83,9 +92,12 @@ public class HUD {
         if (indice >= 0 && indice < 3) {
             recogidas[indice]++; // Sumamos una más a este color
 
-            // Solo pintamos si el contador actual llegó al total de ese color
             if (recogidas[indice] >= total[indice]) {
                 mariposas[indice].setDrawable(new TextureRegionDrawable(mariposasColor[indice]));
+
+                if (indice + 1 < texturaPaneles.length) {
+                    tablaPanel.setBackground(new TextureRegionDrawable(new TextureRegion(texturaPaneles[indice + 1])));
+                }
             }
         }
     }

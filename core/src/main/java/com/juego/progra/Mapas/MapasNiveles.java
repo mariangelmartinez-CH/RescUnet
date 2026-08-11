@@ -34,7 +34,7 @@ public class MapasNiveles {
     private Texture fondo;
     private Texture panel;
     private Texture vallaInferior,vallaSuperior;
-    private Texture invernaderoTecho, invernaderoPiso;
+    private Texture invernaderoTecho, invernaderoPisoC, invernaderoPisoA,invernaderoActual;
     private Texture fotosMariposa[][];
     private int faseMariposa = 0;
 
@@ -57,7 +57,9 @@ public class MapasNiveles {
         vallaInferior = new Texture("VallaInferior.png");
         vallaSuperior = new Texture("VallaSuperior.png");
         invernaderoTecho = new Texture("InvernaderoTecho.png");
-        invernaderoPiso = new Texture("InvernaderoPiso.png");
+        invernaderoPisoC = new Texture("InvernaderoPiso_Cerrado.png");
+        invernaderoPisoA = new Texture("InvernaderoPiso.png");
+        invernaderoActual=invernaderoPisoC;
         Listaobjetos = new ArrayList<>();
         arbusto = new Texture("Arbusto.png");
         arbustoFlores = new Texture("ArbustoFlores.png");
@@ -148,7 +150,10 @@ public class MapasNiveles {
                 break;
             }
         }
-        if(!existeColor && faseMariposa<2){
+        if(!existeColor && faseMariposa == 2) {
+            this.invernaderoActual = invernaderoPisoA;
+            System.out.println("Invernadero abierto");
+        } else if(!existeColor && faseMariposa < 2){
             faseMariposa++;
             System.out.println("Clase de Mariposa recolectada");
         }
@@ -184,7 +189,7 @@ public class MapasNiveles {
     public void dibujar (SpriteBatch batch, Jugador jugador, List<Enemigo> enemigos){
         batch.draw(fondo,0,0,1408,768);
         batch.draw(vallaSuperior,0,0,1408,768);
-        batch.draw(invernaderoPiso,454,257,510,260);
+        batch.draw(invernaderoActual,454,257,510,260);
 
         tiempo += Gdx.graphics.getDeltaTime();
         ArrayList<Dibujable> arrayDibujo = new ArrayList<>();
@@ -220,7 +225,9 @@ public class MapasNiveles {
         vallaSuperior.dispose();
         vallaInferior.dispose();
         invernaderoTecho.dispose();
-        invernaderoPiso.dispose();
+        invernaderoPisoC.dispose();
+        invernaderoPisoA.dispose();
+        invernaderoActual.dispose();
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 fotosMariposa[i][j].dispose();
