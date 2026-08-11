@@ -31,6 +31,16 @@ public class Main extends Game {
         mapa.setHud(HUD);
         jugador = new Jugador(220, 300);
 
+        // HERRAMIENTA DE DEBUG: al hacer clic imprime la coordenada del mundo
+        Gdx.input.setInputProcessor(new com.badlogic.gdx.InputAdapter() {
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                int yCorregida = Gdx.graphics.getHeight() - screenY;
+                System.out.println("clic, " + screenX + ", " + yCorregida);
+                return true;
+            }
+        });
+
         cambiarNivel(1);
     }
 

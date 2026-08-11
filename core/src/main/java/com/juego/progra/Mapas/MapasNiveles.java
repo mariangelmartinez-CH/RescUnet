@@ -41,14 +41,11 @@ public class MapasNiveles {
         return faseItem;
     }
 
-    //VARIBLES LIMITES QUE NECESITO PARA CAMINAR_CELDA
-    private static final float LIMITE_IZQ = 125;
-    private static final float LIMITE_DER = 1279;
-    private static final float LIMITE_ABAJO = 140;
-    private static final float LIMITE_ARRIBA = 590;
-    //AL FINAL SI LE HICE RECTANGULO AL INVERNADERO PERO UNO DENTRO DE OTRO
-    private static final Rectangle invernaderoCaja = new Rectangle(610, 320, 189, 177);
-    private static final Rectangle invernaderoCajaTecho = new Rectangle(667, 477, 75, 40); // 40 = 517 - 477
+    //LIMITES DEL MUNDO: cambian en cada nivel, se asignan en cargarNivel()
+    private float LIMITE_IZQ, LIMITE_DER, LIMITE_ABAJO, LIMITE_ARRIBA;
+
+    //ZONAS FIJAS QUE BLOQUEAN (la casa) - tambien cambian por nivel
+    private ArrayList<Rectangle> zonasBloqueadas = new ArrayList<>();
 
     //Constructor
     public MapasNiveles() {
@@ -119,15 +116,17 @@ public class MapasNiveles {
             return false;
         }
 
-        // INVERNADERO
-        if (rectanguloPersonaje.overlaps(invernaderoCaja) || rectanguloPersonaje.overlaps(invernaderoCajaTecho)) {
-            return false;
+        // LA CASA (uno o varios rectangulos, segun el nivel)
+        for (int i = 0; i < zonasBloqueadas.size(); i++) {
+            if (rectanguloPersonaje.overlaps(zonasBloqueadas.get(i))) {
+                return false;
+            }
         }
 
         //LO DE LOS ARBUSTOS QUE YA ESTABA
         for (int i = 0; i < Listaobjetos.size(); i++) {
             Objetos obj = Listaobjetos.get(i);
-            if (obj.destructible && rectanguloPersonaje.overlaps(obj.cajaObstaculo)){
+            if ((obj.destructible || obj.indestructible) && rectanguloPersonaje.overlaps(obj.cajaObstaculo)){
                 return false;
             }
         }
@@ -182,7 +181,6 @@ public class MapasNiveles {
     public void dibujar (SpriteBatch batch, Jugador jugador, List<Enemigo> enemigos){
         batch.draw(fondo,0,0,1408,768);
         batch.draw(vallaSuperior,0,0,1408,768);
-        batch.draw(invernaderoActual,465,257,490,260);
 
         tiempo += Gdx.graphics.getDeltaTime();
         ArrayList<Dibujable> arrayDibujo = new ArrayList<>();
@@ -194,6 +192,10 @@ public class MapasNiveles {
             arrayDibujo.add(new Dibujable(ene, ene.getY()));
         }
         arrayDibujo.add(new Dibujable(jugador, jugador.getY()));
+        //La casa entra al mismo orden por Y usando la base de sus paredes (347),
+        //que es donde apoya en el suelo por los costados. Quien este mas abajo
+        //se dibuja delante, quien este mas arriba queda detras.
+        arrayDibujo.add(new Dibujable(invernaderoActual, 347));
 
         Collections.sort(arrayDibujo, (a,b) -> Float.compare(b.cY,a.cY));
         for(Dibujable cosa : arrayDibujo){
@@ -205,11 +207,50 @@ public class MapasNiveles {
             }else if (cosa.obj instanceof Jugador){
                 Jugador juga = (Jugador) cosa.obj;
                 juga.dibujar(batch);
+            }else if (cosa.obj instanceof Texture){
+                batch.draw((Texture) cosa.obj,465,257,490,260);
             }
         }
         batch.draw(vallaInferior,0,0,1408,768);
         batch.draw(invernaderoTecho,465,257,490,260);
 
+    }
+
+    //Aqui van los numeros propios de cada nivel: hasta donde se puede caminar
+    //y que rectangulos fijos bloquean (la casa). Se llama desde cargarNivel.
+    private void configurarLimites(int nivel){
+        zonasBloqueadas.clear();
+
+        if (nivel == 1) {
+            LIMITE_IZQ = 125;
+            LIMITE_DER = 1279;
+            LIMITE_ABAJO = 140;
+            LIMITE_ARRIBA = 590;
+
+            //Casa: medida sobre el dibujo real (465,257,490,260)
+            //La casa se bloquea en tres partes: las dos paredes laterales frenan
+            //al ras del suelo, y la del centro empieza mas arriba para que el
+            //jugador pueda subir los escalones y quedar pegado a la puerta.
+            zonasBloqueadas.add(new Rectangle(567, 347, 71, 143));  //pared izquierda
+            zonasBloqueadas.add(new Rectangle(783, 347, 71, 143));  //pared derecha
+            zonasBloqueadas.add(new Rectangle(638, 365, 145, 125)); //puerta (escalones libres)
+        } else {
+            //Nivel 2: la tierra abierta (sin valla encima) va de x 147..1245, y 120..650.
+            //ARRIBA va mas alto que la tierra porque la caja de colision queda
+            //unos 40px por encima de los pies del sprite.
+            LIMITE_IZQ = 147;
+            LIMITE_DER = 1245;
+            LIMITE_ABAJO = 125;
+            LIMITE_ARRIBA = 680;
+
+            //La casa se dibuja igual que en el nivel 1, asi que bloquea igual
+            //La casa se bloquea en tres partes: las dos paredes laterales frenan
+            //al ras del suelo, y la del centro empieza mas arriba para que el
+            //jugador pueda subir los escalones y quedar pegado a la puerta.
+            zonasBloqueadas.add(new Rectangle(567, 347, 71, 143));  //pared izquierda
+            zonasBloqueadas.add(new Rectangle(783, 347, 71, 143));  //pared derecha
+            zonasBloqueadas.add(new Rectangle(638, 365, 145, 125)); //puerta (escalones libres)
+        }
     }
 
     public void cargarNivel (int nivel){
@@ -227,6 +268,8 @@ public class MapasNiveles {
 
         faseItem = 0;
         invernaderoActual = invernaderoPisoC; // Invernadero siempre inicia cerrado
+
+        configurarLimites(nivel);
 
         fotosItem = new Texture[3][3];
         if (nivel == 1) {
