@@ -67,11 +67,19 @@ public class MapasNiveles {
             return;
         }else{
 
+            //Arbustos
             int anchoArbs=70;
             int tamArbusto=70;
+            //Items
+            int anchItem=60;
+            int altItem = 60;
+
             if(nivel==2) {
                 tamArbusto = 90;
                 anchoArbs=110;
+
+                anchItem= 75;
+                altItem=75;
             }
 
             String contenidoArchivo = Gdx.files.internal(archivo).readString();
@@ -100,7 +108,7 @@ public class MapasNiveles {
                     case "conejo":
                     case "flor":
                         int color = Integer.parseInt(datos[3].trim());
-                        objTemp = new Objetos(fotosItem[color],x,y,60,60,tipoObj,color);
+                        objTemp = new Objetos(fotosItem[color],x,y,anchItem,altItem,tipoObj,color);
                         Listaobjetos.add(objTemp);
                         break;
                 }

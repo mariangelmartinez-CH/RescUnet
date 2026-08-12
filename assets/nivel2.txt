@@ -3,7 +3,6 @@ arbusto_flores, 105, 100
 arbusto_flores, 105, 172
 arbusto_flores, 105, 244
 arbusto_flores, 105, 316
-arbusto_flores, 105, 388
 
 #Izquierda hacia al lado
 arbusto_flores, 170, 100
@@ -11,7 +10,7 @@ arbusto_flores, 235, 100
 arbusto_flores, 300, 100
 arbusto_flores, 365, 100
 arbusto_flores, 430, 100
-arbusto_flores, 495, 100
+
 
 #Derecha hacia abajo
 arbusto_flores, 1185, 585
@@ -20,7 +19,6 @@ arbusto_flores, 1185, 441
 arbusto_flores, 1185, 369
 
 #Derecha hacia a un lado
-arbusto_flores, 1185, 585
 arbusto_flores, 1120, 585
 arbusto_flores, 1055, 585
 arbusto_flores,  990, 585
@@ -58,4 +56,52 @@ arbusto, 865, 312
 #Triangulo Superior Derecha
 arbusto_flores,  795, 527
 arbusto,  860, 462
-arbusto,  735, 462
+arbusto,  730, 462
+
+#Triangulo inferior izquierda
+arbusto_flores, 485, 170
+arbusto, 420, 230
+arbusto, 545, 230
+
+#Esquinero izquierda superior
+arbusto_flores, 105, 585
+arbusto, 105, 514
+arbusto, 170, 585
+
+#Esquinero derecha inferior
+arbusto_flores, 1180, 100
+arbusto, 1113, 100
+arbusto, 1180,175
+
+#Conejos Blancos con Negro
+conejo, 140, 430,0
+conejo, 1193, 285,0
+conejo, 503, 245, 0
+conejo, 817, 465,0
+conejo, 455, 530,0
+conejo, 875, 178,0
+
+#Conejos Marrones
+conejo, 350,585,1
+conejo, 350, 240,1
+conejo, 963,445,1
+conejo, 968,115,1
+conejo, 185, 172,1
+conejo, 1135,525,1
+conejo, 670,150,1
+conejo, 670,527,1
+
+#Conejos Beige
+conejo, 330,455,2
+conejo, 380, 385,2
+conejo, 950, 320,2
+conejo, 990, 240,2
+conejo, 503, 245,2
+conejo, 817, 465,2
+conejo, 185, 172,2
+conejo, 185, 250,2
+conejo, 1135,525,2
+conejo, 1135,455,2
+conejo, 520, 110,2
+conejo, 140, 430,2
+conejo, 1193, 285,2

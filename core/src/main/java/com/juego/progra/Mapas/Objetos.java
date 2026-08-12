@@ -32,7 +32,7 @@ public class Objetos {
 
     }
 
-    //Constructor para Mariposas
+    //Constructor para Items
     public Objetos(Texture[] animacion, int x, int y, int ancho, int largo, String tipo, int color) {
         this.aniMariposas=animacion;
         this.cajaObstaculo = new Rectangle(x,y,ancho,largo);
