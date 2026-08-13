@@ -16,9 +16,11 @@ public class Jugador extends Personaje {
 
     private Texture direccionQuieta, direccionPie1, direccionPie2;
     private float tiempoAnimacion = 0;
+    private String direccionMirando = "abajo";
 
     public Jugador(float x, float y) {
         super(x, y, "jugador1DOWN.png");
+        this.cajaTamañito = 4; //mas chica que la de los enemigos, para pasar por los huecos angostos
         abajoQuieto = imagen;
         abajoPie1 = new Texture("jugador1_abajoca.png");
         abajoPie2 = new Texture("jugador1_abajocad.png");
@@ -50,42 +52,46 @@ public class Jugador extends Personaje {
         // MOVIMIENTO EN X
         float newX = x;
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            newX += 155 * delta;
+            newX += 125 * delta;
             direccionQuieta = derechaQuieto; direccionPie1 = derechaPie1; direccionPie2 = derechaPie2;
             moviendo = true; esHorizontal = true;
+            direccionMirando = "derecha";
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            newX -= 155 * delta;
+            newX -= 125 * delta;
             direccionQuieta = izquierdaQuieto; direccionPie1 = izquierdaPie1; direccionPie2 = izquierdaPie2;
             moviendo = true; esHorizontal = true;
+            direccionMirando = "izquierda";
         }
         if (mapa.CaminarCelda(caja(newX, y))) x = newX;
 
         // MOVIMIENTO EN Y
         float newY = y;
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            newY += 155 * delta;
+            newY += 125 * delta;
             direccionQuieta = arribaQuieto; direccionPie1 = arribaPie1; direccionPie2 = arribaPie2;
             moviendo = true; esHorizontal = false;
+            direccionMirando = "arriba";
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            newY -= 155 * delta;
+            newY -= 125 * delta;
             direccionQuieta = abajoQuieto; direccionPie1 = abajoPie1; direccionPie2 = abajoPie2;
             moviendo = true; esHorizontal = false;
+            direccionMirando = "abajo";
         }
         if (mapa.CaminarCelda(caja(x, newY))) y = newY;
 
         if (moviendo) {
             tiempoAnimacion += delta;
             if (esHorizontal) {
-                int frame = (int) ((tiempoAnimacion % 0.6f) / 0.15f); // pie1-quieto-pie2-quieto
+                int frame = (int) ((tiempoAnimacion % 0.6f) / 0.15f);
                 switch (frame) {
                     case 0: imagen = direccionPie1; break;
                     case 2: imagen = direccionPie2; break;
                     default: imagen = direccionQuieta; break;
                 }
             } else {
-                int frame = (int) ((tiempoAnimacion % 0.4f) / 0.2f); // pie1-pie2 directo
+                int frame = (int) ((tiempoAnimacion % 0.4f) / 0.2f);
                 imagen = (frame == 0) ? direccionPie1 : direccionPie2;
             }
         } else {

@@ -1,5 +1,4 @@
 package com.juego.progra.Personajes;
-
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.juego.progra.Mapas.MapasNiveles;
@@ -18,6 +17,7 @@ public class Enemigo extends Personaje {
     private Texture[] izquierda = new Texture[3];
     private Texture[] arriba = new Texture[3];
     private Texture[] abajo = new Texture[3];
+
 
     public Enemigo(float x, float y, Tipo tipo) {
         super(x, y, "villano_down1.png");

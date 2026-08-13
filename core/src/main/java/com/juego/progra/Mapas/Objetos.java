@@ -14,6 +14,7 @@ public class Objetos {
     public boolean recogible;
     public boolean destructible;
     public boolean indestructible;
+    public float tiempoDañado = 0;
 
     //Constructor para Objetos Estáticos (Arbustos)
     public Objetos(Texture imagen, int x, int y, int ancho, int largo, String tipo) {

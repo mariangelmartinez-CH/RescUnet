@@ -19,7 +19,7 @@ public abstract class Personaje {
     public abstract void actualizar(MapasNiveles mapa, float delta);
 
     public void dibujar (SpriteBatch batch) {
-        batch.draw(imagen, x, y, 125, 125); // Lo dibuja en su x, y con tamaño 50x50
+        batch.draw(imagen, x, y, 105, 105); // Lo dibuja en su x, y con tamaño 50x50
     }
     public void dispose() {
         if (imagen != null) {
