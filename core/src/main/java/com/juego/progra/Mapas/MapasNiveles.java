@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MapasNiveles {
+public class MapasNiveles implements Caminable {
 
     //Clase Interna Creada para poder meter todos los objetos del mapa en un solo arraylist
     //Sin importar si es jugador, enemigo, o objeto todos son dibujables
@@ -47,12 +47,18 @@ public class MapasNiveles {
     //ZONAS FIJAS QUE BLOQUEAN (la casa) - tambien cambian por nivel
     private ArrayList<Rectangle> zonasBloqueadas = new ArrayList<>();
 
+    //ROMPER ARBUSTOS: el tamaño del arbusto cambia por nivel, se guarda al cargar
+    public static final float TIEMPO_PARA_ROMPER = 3f;
+    private Texture arbustoDanado;
+    private float anchoArbustoNivel = 70, altoArbustoNivel = 70;
+
     //Constructor
     public MapasNiveles() {
         invernaderoTecho = new Texture("InvernaderoTecho.png");
         invernaderoPisoC = new Texture("InvernaderoPiso_Cerrado.png");
         invernaderoPisoA = new Texture("InvernaderoPiso.png");
         invernaderoActual = invernaderoPisoC;
+        arbustoDanado = new Texture("arbustoRoto2.png");
 
         Listaobjetos = new ArrayList<>();
     }
@@ -78,6 +84,10 @@ public class MapasNiveles {
                 anchItem= 75;
                 altItem=75;
             }
+
+            //Se guarda para que disparar la linea use el tamaño real del nivel
+            anchoArbustoNivel = anchoArbs;
+            altoArbustoNivel = tamArbusto;
 
             String contenidoArchivo = Gdx.files.internal(archivo).readString();
             String[] lineas = contenidoArchivo.split("\n");
@@ -224,6 +234,92 @@ public class MapasNiveles {
 
     }
 
+    //Cambia el sprite del arbusto cuando ya lleva la mitad del daño
+    public void actualizarDanoArbusto(Objetos obj) {
+        if (obj.tiempoDañado >= TIEMPO_PARA_ROMPER * 0.5f) {
+            obj.imagen = arbustoDanado;
+        }
+    }
+
+    public void romperArbusto(Objetos obj) {
+        Listaobjetos.remove(obj);
+    }
+
+    //Devuelve el arbusto rompible que esta REALMENTE en la direccion apuntada.
+    //dx/dy dicen hacia donde se disparo; se descarta cualquier arbusto que este
+    //hacia el lado contrario o demasiado desalineado del eje.
+    public Objetos obtenerArbustoEnDireccion(Rectangle celda, float centroX, float centroY, float dx, float dy) {
+        Objetos masCercano = null;
+        float distanciaMinima = Float.MAX_VALUE;
+        for (Objetos obj : Listaobjetos) {
+            if (!obj.destructible || !celda.overlaps(obj.cajaObstaculo)) continue;
+
+            float centroObjX = obj.cajaObstaculo.x + obj.cajaObstaculo.width / 2f;
+            float centroObjY = obj.cajaObstaculo.y + obj.cajaObstaculo.height / 2f;
+
+            float diffX = centroObjX - centroX;
+            float diffY = centroObjY - centroY;
+
+            if (dx != 0) {
+                if (dx > 0 && diffX <= 0) continue;
+                if (dx < 0 && diffX >= 0) continue;
+                if (Math.abs(diffY) > altoArbustoNivel / 2f) continue;
+            } else {
+                if (dy > 0 && diffY <= 0) continue;
+                if (dy < 0 && diffY >= 0) continue;
+                if (Math.abs(diffX) > anchoArbustoNivel / 2f) continue;
+            }
+
+            float distancia = diffX * diffX + diffY * diffY;
+            if (distancia < distanciaMinima) {
+                distanciaMinima = distancia;
+                masCercano = obj;
+            }
+        }
+        return masCercano;
+    }
+
+    //Avanza de a 5px desde el centro del jugador hasta topar con algo.
+    //Si es un arbusto rompible le suma daño; si es otra cosa, se detiene.
+    public void dispararLinea(float centroX, float centroY, String direccion) {
+        float dx = 0, dy = 0;
+        switch (direccion) {
+            case "derecha": dx = 1; break;
+            case "izquierda": dx = -1; break;
+            case "arriba": dy = 1; break;
+            case "abajo": dy = -1; break;
+        }
+
+        float paso = 5f;
+        float alcanceMax = 5 * (dx != 0 ? anchoArbustoNivel : altoArbustoNivel);
+
+        for (float recorrido = paso; recorrido <= alcanceMax; recorrido += paso) {
+            float cx = centroX + dx * recorrido;
+            float cy = centroY + dy * recorrido;
+
+            Rectangle celdaDeteccion;
+            if (dx != 0) {
+                celdaDeteccion = new Rectangle(cx - 10, centroY - 10, 20, 20);
+            } else {
+                celdaDeteccion = new Rectangle(centroX - 10, cy - 10, 20, 20);
+            }
+
+            Objetos bloqueante = obtenerArbustoEnDireccion(celdaDeteccion, centroX, centroY, dx, dy);
+            if (bloqueante != null) {
+                bloqueante.tiempoDañado += TIEMPO_PARA_ROMPER / 2f;
+                actualizarDanoArbusto(bloqueante);
+                if (bloqueante.tiempoDañado >= TIEMPO_PARA_ROMPER) {
+                    romperArbusto(bloqueante);
+                }
+                return;
+            }
+
+            if (!CaminarCelda(celdaDeteccion)) {
+                return;
+            }
+        }
+    }
+
     //Aqui van los numeros propios de cada nivel: hasta donde se puede caminar
     //y que rectangulos fijos bloquean (la casa). Se llama desde cargarNivel.
     private void configurarLimites(int nivel){
@@ -306,6 +402,7 @@ public class MapasNiveles {
         if(invernaderoPisoC != null) invernaderoPisoC.dispose();
         if(invernaderoPisoA != null) invernaderoPisoA.dispose();
         if(fondo != null) fondo.dispose();
+        if(arbustoDanado != null) arbustoDanado.dispose();
 
         if(fotosItem != null) {
             for (int i = 0; i < fotosItem.length; i++) {

@@ -1,6 +1,7 @@
 package com.juego.progra;
 import com.badlogic.gdx.graphics.Texture;
 import com.juego.progra.Mapas.HUD;
+import com.juego.progra.Mapas.MapaPrincipal;
 import com.juego.progra.Mapas.MapasNiveles;
 import com.juego.progra.Personajes.Enemigo;
 import com.badlogic.gdx.Game;
@@ -23,6 +24,11 @@ public class Main extends Game {
     private List<Enemigo> enemigos;
     private int nivelActual = 1;
 
+    private MapaPrincipal mapaPrincipal;
+    private boolean enMapaPrincipal = true;
+    //Donde arranca el jugador en el mapa principal: en el camino, frente a la casa
+    private static final float MAPA_X = 196, MAPA_Y = 451;
+
     @Override
     public void create(){
         batch = new SpriteBatch();
@@ -41,7 +47,14 @@ public class Main extends Game {
             }
         });
 
+        mapaPrincipal = new MapaPrincipal();
         cambiarNivel(1);
+        irAlMapaPrincipal();
+    }
+
+    private void irAlMapaPrincipal() {
+        enMapaPrincipal = true;
+        jugador = new Jugador(MAPA_X, MAPA_Y);
     }
 
     private void cambiarNivel(int nuevoNivel) {
@@ -67,11 +80,16 @@ public class Main extends Game {
             enemigoAbajo.setCajaTamañito(15);
             enemigos.add(enemigoAbajo);
 
-        } /*else if (nivelActual == 2) {
-            enemigos.add(new Enemigo(600, 400, Enemigo.Tipo.ALEATORIO));
-            enemigos.add(new Enemigo(400, 200, Enemigo.Tipo.HORIZONTAL));
+        } else if (nivelActual == 2) {
+            // Nivel 2: dos zorros arriba y dos abajo. Las posiciones se
+            // eligieron sobre los arbustos reales de nivel2.txt para que
+            // ninguno nazca encerrado.
+            enemigos.add(new Enemigo(400, 600, Enemigo.Tipo.HORIZONTAL, 2));
+            enemigos.add(new Enemigo(500, 90,  Enemigo.Tipo.HORIZONTAL, 2));
 
-        }*/
+            enemigos.add(new Enemigo(700, 580, Enemigo.Tipo.HORIZONTAL, 2));
+            enemigos.add(new Enemigo(850, 140, Enemigo.Tipo.ALEATORIO, 2));
+        }
     }
 
     @Override
@@ -79,13 +97,20 @@ public class Main extends Game {
         // --- TECLA DE PRUEBA TEMPORAL ---
         // Presiona '2' para cambiar al nivel 2 limpiamente con sus nuevos enemigos
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.NUM_2)) {
+            enMapaPrincipal = false;
             cambiarNivel(2);
             Gdx.app.log("PRUEBA", "Cambiado al Nivel 2 con nuevos enemigos");
         }
         // Opcional: Presiona '1' para regresar al nivel 1 si quieres probar volver
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.NUM_1)) {
+            enMapaPrincipal = false;
             cambiarNivel(1);
             Gdx.app.log("PRUEBA", "Regresado al Nivel 1");
+        }
+        // Presiona 'M' para volver al mapa principal
+        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.M)) {
+            irAlMapaPrincipal();
+            Gdx.app.log("PRUEBA", "En el mapa principal");
         }
         // ---------------------------------
 
@@ -93,6 +118,16 @@ public class Main extends Game {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         float delta = Gdx.graphics.getDeltaTime();
+
+        if (enMapaPrincipal) {
+            jugador.moverEn(mapaPrincipal, delta);
+
+            batch.begin();
+            mapaPrincipal.dibujar(batch);
+            jugador.dibujar(batch);
+            batch.end();
+            return;
+        }
 
         jugador.actualizar(mapa, delta);
         for (Enemigo enemigo : enemigos) {
@@ -118,5 +153,6 @@ public class Main extends Game {
             enemigo.dispose();
         }
         mapa.dipose();
+        mapaPrincipal.dispose();
     }
 }
