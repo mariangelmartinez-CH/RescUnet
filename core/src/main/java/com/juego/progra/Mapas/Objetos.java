@@ -16,7 +16,7 @@ public class Objetos {
     public boolean indestructible;
     public float tiempoDañado = 0;
 
-    //Constructor para Objetos Estáticos (Arbustos)
+    //Constructor para Objetos Estáticos (Arbustos y estantes)
     public Objetos(Texture imagen, int x, int y, int ancho, int largo, String tipo) {
         this.imagen=imagen;
         this.cajaObstaculo = new Rectangle(x,y,ancho,largo);
@@ -26,7 +26,7 @@ public class Objetos {
         if(tipo.equals("arbusto")){
             this.destructible = true;
             this.indestructible=false;
-        }else if (tipo.equals("arbusto_flores")){
+        }else if (tipo.equals("arbusto_flores") || tipo.equals("estanteV") || tipo.equals("estanteH")){
             this.destructible = false;
             this.indestructible=true;
         }
