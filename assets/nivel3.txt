@@ -1,0 +1,66 @@
+#Estantes Orillo de arriba
+estanteH, 160, 585
+estanteH, 285, 585
+estanteH, 410, 585
+estanteH, 535, 585
+estanteH, 1080, 585
+estanteH, 955, 585
+estanteH, 830, 585
+estanteH, 705, 585
+
+#Parte derecha empezando de arriba a abajo
+estanteV, 120, 420
+estanteH, 150, 340
+estanteH, 275, 340
+arbusto, 410,360
+estanteH, 450, 340
+estanteV, 482, 410
+arbusto, 530,560
+estanteH, 240, 470
+estanteH, 365, 470
+
+#Atravesado
+estanteV, 620, 420
+estanteV, 620, 300
+
+#Derecha
+estanteH, 790, 470
+estanteH, 915, 470
+estanteV, 1115, 420
+estanteV, 1115, 240
+estanteV, 1000, 370
+estanteH, 805, 345
+estanteV, 890, 285
+arbusto, 988, 360
+arbusto, 805, 445
+
+#Abajo
+estanteH, 240, 220
+estanteH, 365, 220
+estanteH, 840, 220
+estanteH, 965, 220
+arbusto, 1103, 230
+estanteH, 620, 180
+
+#Orillo abajo
+estanteV, 120, 120
+estanteH, 200, 100
+estanteH, 325, 100
+estanteH, 450, 100
+estanteH, 770, 100
+estanteH, 895, 100
+estanteH, 1018, 100
+arbusto, 1160,140
+
+#Orquideas moradas
+flor, 220, 430,0
+flor, 600,560,0
+flor, 870, 330,0
+flor, 1155, 570,0
+flor, 170, 280,0
+flor, 1160,200,0
+
+#Orquideas Blancas
+flor, 870, 450,1
+flor, 990, 450,1
+flor, 780, 260,1

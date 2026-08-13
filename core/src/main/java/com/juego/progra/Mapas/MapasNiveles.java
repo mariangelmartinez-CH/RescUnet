@@ -19,7 +19,6 @@ public class MapasNiveles {
         public float cY;
 
         //Constructor
-
         public Dibujable(Object obj,float cY) {
             this.obj = obj;
             this.cY= cY;
@@ -31,6 +30,8 @@ public class MapasNiveles {
     private float tiempo=0;
     private Texture arbusto;
     private Texture arbustoFlores;
+    private Texture estanteV;
+    private Texture estanteH;
     private Texture fondo;
     private Texture vallaInferior,vallaSuperior;
     private Texture invernaderoTecho, invernaderoPisoC, invernaderoPisoA,invernaderoActual;
@@ -77,6 +78,10 @@ public class MapasNiveles {
 
                 anchItem= 75;
                 altItem=75;
+
+            }if(nivel==3){
+                anchItem=70;
+                altItem= 70;
             }
 
             String contenidoArchivo = Gdx.files.internal(archivo).readString();
@@ -99,6 +104,14 @@ public class MapasNiveles {
                         break;
                     case "arbusto_flores":
                         objTemp = new Objetos(arbustoFlores,x,y,anchoArbs,tamArbusto,tipoObj);
+                        Listaobjetos.add(objTemp);
+                        break;
+                    case "estanteV":
+                        objTemp = new Objetos(estanteV,x,y,160,180,tipoObj);
+                        Listaobjetos.add(objTemp);
+                        break;
+                    case "estanteH":
+                        objTemp = new Objetos(estanteH,x,y,160,140,tipoObj);
                         Listaobjetos.add(objTemp);
                         break;
                     case "mariposa":
@@ -176,17 +189,23 @@ public class MapasNiveles {
         }
     }
 
+
     //Método hecho para no repetir codigo en el metodo dibujar
     public void dibujarObjetos (SpriteBatch batch, Objetos obj){
         if (obj.tipo.equals("mariposa") || obj.tipo.equals("conejo") || obj.tipo.equals("flor")) {
             if (obj.colorItem == faseItem) {
-                obj.dibujarM(batch, tiempo);
+
+                float tiempoAnimacion = tiempo;
+                if (nivel == 3) {
+                    tiempoAnimacion = tiempo * 0.5f; // Más lento en el nivel 3
+                }
+                obj.dibujarM(batch, tiempoAnimacion);
             }
         } else {
             obj.dibujar(batch);
         }
     }
-    public void dibujar (SpriteBatch batch, Jugador jugador, List<Enemigo> enemigos){
+    public void dibujar (SpriteBatch batch, Jugador jugador, List<Enemigo> enemigos, int nivel){
         batch.draw(fondo,0,0,1408,768);
         batch.draw(vallaSuperior,0,0,1408,768);
 
@@ -203,7 +222,9 @@ public class MapasNiveles {
         //La casa entra al mismo orden por Y usando la base de sus paredes (347),
         //que es donde apoya en el suelo por los costados. Quien este mas abajo
         //se dibuja delante, quien este mas arriba queda detras.
-        arrayDibujo.add(new Dibujable(invernaderoActual, 347));
+        if (nivel== 1 || nivel == 2) {
+            arrayDibujo.add(new Dibujable(invernaderoActual, 347));
+        }
 
         Collections.sort(arrayDibujo, (a,b) -> Float.compare(b.cY,a.cY));
         for(Dibujable cosa : arrayDibujo){
@@ -215,12 +236,14 @@ public class MapasNiveles {
             }else if (cosa.obj instanceof Jugador){
                 Jugador juga = (Jugador) cosa.obj;
                 juga.dibujar(batch);
-            }else if (cosa.obj instanceof Texture){
+            }else if (cosa.obj instanceof Texture && (nivel == 1 || nivel == 2)){
                 batch.draw((Texture) cosa.obj,465,257,490,260);
             }
         }
         batch.draw(vallaInferior,0,0,1408,768);
-        batch.draw(invernaderoTecho,465,257,490,260);
+        if (nivel == 1 || nivel == 2) {
+            batch.draw(invernaderoTecho, 465, 257, 490, 260);
+        }
 
     }
 
@@ -261,8 +284,10 @@ public class MapasNiveles {
         }
     }
 
+    private int nivel;
     public void cargarNivel (int nivel){
         Listaobjetos.clear();
+        this.nivel=nivel;
 
         if(fondo != null) fondo.dispose();
         if(vallaSuperior != null) vallaSuperior.dispose();
@@ -273,8 +298,10 @@ public class MapasNiveles {
         vallaInferior = new Texture("vallaInferior" + nivel + ".png");
         arbusto = new Texture("arbusto"+nivel+".png");
         arbustoFlores = new Texture("arbustoFlores"+nivel+".png");
+        estanteH = new Texture ("estanteHorizontal.png");
+        estanteV = new Texture("estanteVertical.png");
 
-        faseItem = 0;
+        faseItem = 1;
         invernaderoActual = invernaderoPisoC; // Invernadero siempre inicia cerrado
 
         configurarLimites(nivel);
@@ -294,6 +321,13 @@ public class MapasNiveles {
                     fotosItem[i][j] = new Texture(conejos[i] + (j + 1) + ".PNG");
                 }
             }
+        }else if (nivel == 3) {
+            String[] conejos = {"blanca", "morada", "amarilla"};
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    fotosItem[i][j] = new Texture(conejos[i] + (j + 1) + ".PNG");
+                }
+            }
         }
         cargarArchivo("nivel"+nivel+".txt",nivel);
     }
@@ -306,6 +340,8 @@ public class MapasNiveles {
         if(invernaderoPisoC != null) invernaderoPisoC.dispose();
         if(invernaderoPisoA != null) invernaderoPisoA.dispose();
         if(fondo != null) fondo.dispose();
+        if(estanteV != null) estanteV.dispose();
+        if(estanteH != null) estanteH.dispose();
 
         if(fotosItem != null) {
             for (int i = 0; i < fotosItem.length; i++) {

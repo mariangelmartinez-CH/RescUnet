@@ -1,4 +1,5 @@
 package com.juego.progra;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.juego.progra.Mapas.HUD;
 import com.juego.progra.Mapas.MapasNiveles;
@@ -22,6 +23,10 @@ public class Main extends Game {
     private Jugador jugador;
     private List<Enemigo> enemigos;
     private int nivelActual = 1;
+
+    public int getNivelActual() {
+        return nivelActual;
+    }
 
     @Override
     public void create(){
@@ -87,6 +92,15 @@ public class Main extends Game {
             cambiarNivel(1);
             Gdx.app.log("PRUEBA", "Regresado al Nivel 1");
         }
+        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.NUM_2)) {
+            cambiarNivel(2);
+            Gdx.app.log("PRUEBA", "Cambiado al Nivel 2 con nuevos enemigos");
+        }
+        // Opcional: Presiona '1' para regresar al nivel 1 si quieres probar volver
+        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.NUM_3)) {
+            cambiarNivel(3);
+            Gdx.app.log("PRUEBA", "Regresado al Nivel 3");
+        }
         // ---------------------------------
 
         Gdx.gl.glClearColor(0.15f, 0.15f, 0.15f, 1);
@@ -104,7 +118,7 @@ public class Main extends Game {
         }
 
         batch.begin();
-        mapa.dibujar(batch, jugador, enemigos);
+        mapa.dibujar(batch, jugador, enemigos,nivelActual);
         HUD.dibujarCorazones(batch, jugador.getVidas());
         batch.end();
         HUD.render();
