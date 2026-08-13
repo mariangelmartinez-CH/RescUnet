@@ -15,6 +15,10 @@ public class Jugador extends Personaje {
     private int vidas=5;
     private float tiempoSinPerderVidas = 0;
 
+    //Donde reaparece al recibir un golpe. Cambia segun el nivel, porque el
+    //punto del nivel 1 cae dentro de un estante en el nivel 3.
+    private float spawnX, spawnY;
+
     private Texture abajoQuieto, abajoPie1, abajoPie2;
     private Texture arribaQuieto, arribaPie1, arribaPie2;
     private Texture derechaQuieto, derechaPie1, derechaPie2;
@@ -27,6 +31,8 @@ public class Jugador extends Personaje {
     public Jugador(float x, float y) {
         super(x, y, "jugador1DOWN.png");
         this.cajaTamañito = 4; //mas chica que la de los enemigos, para pasar por los huecos angostos
+        this.spawnX = x;
+        this.spawnY = y;
         abajoQuieto = imagen;
         abajoPie1 = new Texture("jugador1_abajoca.png");
         abajoPie2 = new Texture("jugador1_abajocad.png");
@@ -153,7 +159,7 @@ public class Jugador extends Personaje {
         if (tiempoSinPerderVidas <= 0) {
             vidas--;
             tiempoSinPerderVidas = INVENCIBILIDAD;
-            x = 220; y = 300;
+            x = spawnX; y = spawnY;
             Gdx.app.log("JUEGO", "Vidas restantes: " + vidas);
         }
     }

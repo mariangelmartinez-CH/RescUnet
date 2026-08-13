@@ -9,6 +9,11 @@ public class Objetos {
     public Texture imagen;
     public Texture[] aniMariposas;
     public Rectangle cajaObstaculo;
+
+    //Los estantes tienen mucho margen transparente alrededor del dibujo, asi
+    //que su caja de choque es mas chica que la de dibujo. En los demas objetos
+    //las dos son la misma.
+    public Rectangle cajaColision;
     public String tipo;
     public int colorItem; //0 Azul,  1 Amarillo, 2 Rosa
     public boolean recogible;
@@ -31,6 +36,16 @@ public class Objetos {
             this.indestructible=true;
         }
 
+        //Proporciones medidas sobre los PNG: el mueble no llena su recuadro
+        if(tipo.equals("estanteV")){
+            this.cajaColision = new Rectangle(x + ancho*0.29f, y + largo*0.08f,
+                                              ancho*0.39f, largo*0.86f);
+        }else if(tipo.equals("estanteH")){
+            this.cajaColision = new Rectangle(x + ancho*0.10f, y + largo*0.21f,
+                                              ancho*0.84f, largo*0.64f);
+        }else{
+            this.cajaColision = this.cajaObstaculo;
+        }
     }
 
     //Constructor para Items
@@ -42,7 +57,7 @@ public class Objetos {
 
         this.destructible =  false;
         this.recogible = true;
-
+        this.cajaColision = this.cajaObstaculo;
     }
 
     //Objetos Fijos

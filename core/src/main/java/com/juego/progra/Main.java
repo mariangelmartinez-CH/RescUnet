@@ -60,7 +60,14 @@ public class Main extends Game {
 
         mapa.cargarNivel(nivelActual);
         HUD.actualizarHud(nivelActual);
-        jugador = new Jugador(220, 300);
+
+        //Cada nivel tiene su punto de aparicion: el de los niveles 1 y 2 cae
+        //dentro de un estante en el nivel 3, por eso no puede ser el mismo.
+        if (nivelActual == 3) {
+            jugador = new Jugador(480, 200);
+        } else {
+            jugador = new Jugador(220, 300);
+        }
 
         enemigos = new ArrayList<>();
         if (nivelActual == 1) {
@@ -72,34 +79,31 @@ public class Main extends Game {
             enemigoAbajo.setCajaTamañito(15);
             enemigos.add(enemigoAbajo);
 
-        } /*else if (nivelActual == 2) {
-            enemigos.add(new Enemigo(600, 400, Enemigo.Tipo.ALEATORIO));
-            enemigos.add(new Enemigo(400, 200, Enemigo.Tipo.HORIZONTAL));
-
-        }*/
+        } else if (nivelActual == 2) {
+            // Nivel 2: cuatro zorros, dos por mitad. Posiciones verificadas
+            // contra los arbustos de nivel2.txt para que ninguno nazca encerrado.
+            enemigos.add(new Enemigo(400, 600, Enemigo.Tipo.HORIZONTAL, 2));
+            enemigos.add(new Enemigo(500, 90,  Enemigo.Tipo.HORIZONTAL, 2));
+            enemigos.add(new Enemigo(700, 580, Enemigo.Tipo.HORIZONTAL, 2));
+            enemigos.add(new Enemigo(850, 140, Enemigo.Tipo.ALEATORIO, 2));
+        }
+        // El nivel 3 todavia no tiene enemigos: falta decidir cual es su villano
     }
 
     @Override
     public void render(){
-        // --- TECLA DE PRUEBA TEMPORAL ---
-        // Presiona '2' para cambiar al nivel 2 limpiamente con sus nuevos enemigos
-        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.NUM_2)) {
-            cambiarNivel(2);
-            Gdx.app.log("PRUEBA", "Cambiado al Nivel 2 con nuevos enemigos");
-        }
-        // Opcional: Presiona '1' para regresar al nivel 1 si quieres probar volver
+        // --- TECLAS DE PRUEBA TEMPORALES: 1, 2 y 3 cambian de nivel ---
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.NUM_1)) {
             cambiarNivel(1);
-            Gdx.app.log("PRUEBA", "Regresado al Nivel 1");
+            Gdx.app.log("PRUEBA", "Nivel 1");
         }
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.NUM_2)) {
             cambiarNivel(2);
-            Gdx.app.log("PRUEBA", "Cambiado al Nivel 2 con nuevos enemigos");
+            Gdx.app.log("PRUEBA", "Nivel 2");
         }
-        // Opcional: Presiona '1' para regresar al nivel 1 si quieres probar volver
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.NUM_3)) {
             cambiarNivel(3);
-            Gdx.app.log("PRUEBA", "Regresado al Nivel 3");
+            Gdx.app.log("PRUEBA", "Nivel 3");
         }
         // ---------------------------------
 
