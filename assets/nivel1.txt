@@ -1,105 +1,112 @@
-#Arbustos  florales de los orillos
-arbusto_flores, 115, 510
-arbusto_flores, 115, 460
-arbusto_flores, 115, 410
-arbusto_flores, 115, 360
-arbusto_flores, 115, 310
-arbusto_flores, 115, 260
-arbusto_flores, 115, 210
-arbusto_flores, 115, 160
-arbusto_flores,115, 110
+#Arbustos florales de los orillos
+arbusto_flores, 100, 530
+arbusto_flores, 100, 478
+arbusto_flores, 100, 426
+arbusto_flores, 100, 370
+arbusto_flores, 100, 314
+arbusto_flores, 100, 258
+arbusto_flores, 100, 202
+arbusto_flores, 100, 146
+arbusto_flores, 100, 90
 
-arbusto_flores, 1235, 510
-arbusto_flores, 1235, 460
-arbusto_flores, 1235, 410
-arbusto_flores, 1235, 360
-arbusto_flores, 1235, 310
-arbusto_flores, 1235, 260
-arbusto_flores, 1235, 210
-arbusto_flores, 1235, 160
-arbusto_flores,1235, 110
+arbusto_flores, 1223, 530
+arbusto_flores, 1223, 478
+arbusto_flores, 1223, 426
+arbusto_flores, 1223, 370
+arbusto_flores, 1223, 314
+arbusto_flores, 1223, 258
+arbusto_flores, 1223, 202
+arbusto_flores, 1223, 146
+arbusto_flores, 1223, 90
 
 #Arbustos lado Izquierdo
-arbusto_flores, 265, 460
-arbusto, 315,460
-arbusto, 365,460
-arbusto, 415,460
-arbusto, 465,460
-arbusto, 515,460
-arbusto, 265,410
+arbusto_flores, 245, 470
+arbusto, 302,470
+arbusto, 359,470
+arbusto, 416,470
+arbusto, 473,470
+arbusto, 530,470
+arbusto, 245,414
 
-arbusto, 265,210
-arbusto_flores, 265,160
-arbusto, 315,160
-arbusto, 365,160
-arbusto, 415,160
-arbusto, 465,160
-arbusto, 515,160
+arbusto, 245,196
+arbusto_flores, 245,140
+arbusto, 302,140
+arbusto, 359,140
+arbusto, 416,140
+arbusto, 473,140
+arbusto, 530,140
 
-arbusto, 555,412
-arbusto, 415,360
-arbusto, 465,360
-arbusto, 515,360
-arbusto_flores, 365,360
-arbusto_flores, 365,310
-arbusto_flores, 365,260
-arbusto, 415,260
-arbusto, 465,260
-arbusto, 515,260
-arbusto, 555,210
+arbusto, 555,414
+arbusto, 407,358
+arbusto, 464,358
+arbusto, 521,358
+arbusto_flores, 350,358
+arbusto_flores, 350,302
+arbusto_flores, 350,246
+arbusto, 407,246
+arbusto, 464,246
+arbusto, 521,246
+arbusto, 555,190
 
 #Arbustos Lado Derecho
-arbusto_flores, 1085, 460
-arbusto, 1035,460
-arbusto, 985,460
-arbusto, 935,460
-arbusto, 885,460
-arbusto, 835,460
-arbusto, 1085,410
+arbusto_flores, 1085, 470
+arbusto, 1028,470
+arbusto, 971,470
+arbusto, 914,470
+arbusto, 857,470
+arbusto, 800,470
+arbusto, 1085,414
 
-arbusto, 1085,210
-arbusto_flores, 1085,160
-arbusto, 1035,160
-arbusto, 985,160
-arbusto, 935,160
-arbusto, 885,160
-arbusto, 835,160
+arbusto, 1085,196
+arbusto_flores, 1085,140
+arbusto, 1028,140
+arbusto, 971,140
+arbusto, 914,140
+arbusto, 857,140
+arbusto, 800,140
 
-arbusto, 796,412
-arbusto,835,360
-arbusto, 885,360
-arbusto, 935,360
-arbusto_flores, 985,360
-arbusto_flores, 985,310
-arbusto_flores, 985,260
-arbusto,835,260
-arbusto, 885,260
-arbusto, 935,260
-arbusto, 796,210
+arbusto, 760,414
+arbusto, 809,358
+arbusto, 866,358
+arbusto, 923,358
+arbusto_flores, 980,358
+arbusto_flores, 980,302
+arbusto_flores, 980,246
+arbusto,809,246
+arbusto, 866,246
+arbusto, 923,246
+arbusto, 760,190
+
+#Arbusto flores del centro
+arbusto_flores, 658,360
+arbusto_flores, 658,303
+arbusto_flores, 658,246
+arbusto_flores, 601,303
+arbusto_flores, 715,303
 
 #Mariposas Azules, lado izquierdo
-mariposa, 293, 368,0
-mariposa, 293, 318,0
-mariposa, 293, 268,0
+mariposa, 310, 425,0
+mariposa, 464, 315,0
+mariposa, 310, 196,0
 #Mariposas Azules, lado derechp
-mariposa, 1065,368,0
-mariposa, 1065,318,0
-mariposa, 1065,268,0
+mariposa, 1036,425,0
+mariposa, 866,315,0
+mariposa, 1036,196,0
 
 #Mariposas Amarillas, lado derecho
-mariposa, 215, 463,1
+mariposa, 200, 463,1
 mariposa, 165, 160,1
-mariposa, 472,315,1
+mariposa, 715,460,1
 mariposa, 630,170,1
 #Mariposas AMrillas, lado izquierdo
-mariposa, 1138, 463,1
-mariposa, 1185, 160,1
-mariposa, 885,315,1
-mariposa, 730,170,1
+mariposa, 1146, 463,1
+mariposa, 1180, 160,1
+mariposa, 625,460,1
+mariposa, 710,170,1
 
 #Mariposas Rosa, lado derecho
-mariposa, 655,463,2
-mariposa, 715,463,2
+mariposa, 668,463,2
+mariposa, 668,170,2
 mariposa, 445,318,2
 mariposa, 495,318,2
 mariposa, 918,318,2
@@ -107,8 +114,8 @@ mariposa, 868,318,2
 mariposa, 495,318,2
 mariposa, 193,438,2
 mariposa, 193,190,2
-mariposa, 390,418,2
+mariposa, 390,425,2
 #Lado Izquierdo
 mariposa, 1168,438,2
 mariposa, 1168,190,2
-mariposa, 920,218,2
+mariposa, 920,205,2

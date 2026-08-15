@@ -34,7 +34,6 @@ public class MapasNiveles implements Caminable {
     private Texture estanteH;
     private Texture fondo;
     private Texture vallaInferior,vallaSuperior;
-    private Texture invernaderoTecho, invernaderoPisoC, invernaderoPisoA,invernaderoActual;
     private Texture fotosItem[][];
     private int faseItem = 0;
 
@@ -55,11 +54,6 @@ public class MapasNiveles implements Caminable {
 
     //Constructor
     public MapasNiveles() {
-        invernaderoTecho = new Texture("InvernaderoTecho.png");
-        invernaderoPisoC = new Texture("InvernaderoPiso_Cerrado.png");
-        invernaderoPisoA = new Texture("InvernaderoPiso.png");
-        invernaderoActual = invernaderoPisoC;
-
         Listaobjetos = new ArrayList<>();
     }
 
@@ -71,8 +65,8 @@ public class MapasNiveles implements Caminable {
         }else{
 
             //Arbustos
-            int anchoArbs=70;
-            int tamArbusto=70;
+            int anchoArbs=80;
+            int tamArbusto=80;
             //Items
             int anchItem=60;
             int altItem = 60;
@@ -173,7 +167,6 @@ public class MapasNiveles implements Caminable {
             }
         }
         if(!existeColor && faseItem == 2) {
-            this.invernaderoActual = invernaderoPisoA;
             System.out.println("Invernadero abierto");
         } else if(!existeColor && faseItem < 2){
             faseItem++;
@@ -228,12 +221,6 @@ public class MapasNiveles implements Caminable {
             arrayDibujo.add(new Dibujable(ene, ene.getY()));
         }
         arrayDibujo.add(new Dibujable(jugador, jugador.getY()));
-        //La casa entra al mismo orden por Y usando la base de sus paredes (347),
-        //que es donde apoya en el suelo por los costados. Quien este mas abajo
-        //se dibuja delante, quien este mas arriba queda detras.
-        if (nivel== 1 || nivel == 2) {
-            arrayDibujo.add(new Dibujable(invernaderoActual, 347));
-        }
 
         Collections.sort(arrayDibujo, (a,b) -> Float.compare(b.cY,a.cY));
         for(Dibujable cosa : arrayDibujo){
@@ -250,9 +237,6 @@ public class MapasNiveles implements Caminable {
             }
         }
         batch.draw(vallaInferior,0,0,1408,768);
-        if (nivel == 1 || nivel == 2) {
-            batch.draw(invernaderoTecho, 465, 257, 490, 260);
-        }
 
     }
 
@@ -412,7 +396,6 @@ public class MapasNiveles implements Caminable {
         estanteV = new Texture("estanteVertical.png");
 
         faseItem = 0;
-        invernaderoActual = invernaderoPisoC; // Invernadero siempre inicia cerrado
 
         configurarLimites(nivel);
 
@@ -446,9 +429,6 @@ public class MapasNiveles implements Caminable {
         if(arbustoFlores != null) arbustoFlores.dispose();
         if(vallaSuperior != null) vallaSuperior.dispose();
         if(vallaInferior != null) vallaInferior.dispose();
-        if(invernaderoTecho != null) invernaderoTecho.dispose();
-        if(invernaderoPisoC != null) invernaderoPisoC.dispose();
-        if(invernaderoPisoA != null) invernaderoPisoA.dispose();
         if(fondo != null) fondo.dispose();
         if(estanteV != null) estanteV.dispose();
         if(estanteH != null) estanteH.dispose();
