@@ -28,14 +28,15 @@ public class MapasNiveles implements Caminable {
     //Variables
     private ArrayList<Objetos> Listaobjetos;
     private float tiempo=0;
+    private int faseItem = 0;
+    private boolean nivelCompl = false;
     private Texture arbusto;
     private Texture arbustoFlores;
     private Texture estanteV;
     private Texture estanteH;
     private Texture fondo;
-    private Texture vallaInferior,vallaSuperior;
+    private Texture vallaInferior,vallaSuperior,vallaSuperior_Ab;
     private Texture fotosItem[][];
-    private int faseItem = 0;
 
     public int getFaseItem() {
         return faseItem;
@@ -72,8 +73,8 @@ public class MapasNiveles implements Caminable {
             int altItem = 60;
 
             if(nivel==2) {
-                tamArbusto = 90;
-                anchoArbs=110;
+                tamArbusto = 80;
+                anchoArbs=100;
 
                 anchItem= 75;
                 altItem=75;
@@ -167,7 +168,8 @@ public class MapasNiveles implements Caminable {
             }
         }
         if(!existeColor && faseItem == 2) {
-            System.out.println("Invernadero abierto");
+            nivelCompl=true;
+            System.out.println("Nivel Completado");
         } else if(!existeColor && faseItem < 2){
             faseItem++;
             System.out.println("Clase de Mariposa recolectada");
@@ -209,8 +211,8 @@ public class MapasNiveles implements Caminable {
     }
     public void dibujar (SpriteBatch batch, Jugador jugador, List<Enemigo> enemigos, int nivel){
         batch.draw(fondo,0,0,1408,768);
-        batch.draw(vallaSuperior,0,0,1408,768);
-
+        Texture vallaDibujar = nivelCompl ? vallaSuperior_Ab : vallaSuperior;
+        batch.draw(vallaDibujar, 0, 0, 1408, 768);
         tiempo += Gdx.graphics.getDeltaTime();
         ArrayList<Dibujable> arrayDibujo = new ArrayList<>();
 
@@ -386,6 +388,8 @@ public class MapasNiveles implements Caminable {
         fondo = new Texture("fondo" + nivel + ".png");
         vallaSuperior = new Texture("vallaSuperior" + nivel + ".png");
         vallaInferior = new Texture("vallaInferior" + nivel + ".png");
+        vallaSuperior_Ab = new Texture("vallaSuperior_Ab"+nivel+".png");
+        nivelCompl = false;
         arbusto = new Texture("arbusto"+nivel+".png");
         arbustoFlores = new Texture("arbustoFlores"+nivel+".png");
 
@@ -433,6 +437,7 @@ public class MapasNiveles implements Caminable {
         if(estanteV != null) estanteV.dispose();
         if(estanteH != null) estanteH.dispose();
         if(arbustoDanado != null) arbustoDanado.dispose();
+        if(vallaSuperior_Ab != null) vallaSuperior_Ab.dispose();
 
         if(fotosItem != null) {
             for (int i = 0; i < fotosItem.length; i++) {
