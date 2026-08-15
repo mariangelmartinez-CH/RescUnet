@@ -18,14 +18,19 @@ public class HUD {
     // Texturas pre-cargadas por nivel (Evita fugas de memoria)
     private Texture[] grisNivel1, colorNivel1;
     private Texture[] grisNivel2, colorNivel2;
+    private Texture[] grisNivel3, colorNivel3;
 
-    private final int[] posX_M = {65, 182, 278};
-    private final int[] posY_M = {17, 18, 3};
-    private final int[] size_M = {75, 75, 95};
+    private final int[] posX_M = {553, 663, 762};
+    private final int[] posY_M = {33, 35, 23};
+    private final int[] size_M = {75, 75, 93};
 
-    private final int[] posX_C = {65, 183, 288};
-    private final int[] posY_C = {11, 10, 11};
+    private final int[] posX_C = {553, 663, 770};
+    private final int[] posY_C = {30, 30, 30};
     private final int[] size_C = {75, 78, 78};
+
+    private final int[] posX_F = {563, 673, 780};
+    private final int[] posY_F = {45, 45, 45};
+    private final int[] size_F = {56, 56, 56};
 
 
     private Texture[] ItemsGris = new Texture[3];
@@ -51,8 +56,8 @@ public class HUD {
 
         tablaPanel = new Table();
         tablaPanel.setBackground(new TextureRegionDrawable(new TextureRegion(texturaPaneles[0])));
-        tablaPanel.setSize(450, 150);
-        tablaPanel.setPosition(475, 2);
+        tablaPanel.setSize(450, 170);
+        tablaPanel.setPosition(950, 2);
         stage.addActor(tablaPanel);
 
         grupoItems = new Group();
@@ -81,6 +86,18 @@ public class HUD {
             new Texture("negro1.PNG"),
             new Texture("marron1.PNG"),
             new Texture("beige1.PNG")
+        };
+
+        //Flores
+        grisNivel3 = new Texture[]{
+          new Texture("blancaGris.png"),
+          new Texture("moradaGris.png"),
+          new Texture("amarillaGris.png"),
+        };
+        colorNivel3= new Texture[]{
+          new Texture("blanca1.png"),
+          new Texture ("morada1.png"),
+          new Texture("amarilla1.png"),
         };
 
         // Por defecto arrancamos con el Nivel 1
@@ -133,9 +150,26 @@ public class HUD {
         tablaPanel.setBackground(new TextureRegionDrawable(new TextureRegion(texturaPaneles[0])));
 
         // Elegimos qué configuración usar
-        int[] posYActual = (nivel == 1) ? posY_M : posY_C;
-        int[] sizeActual = (nivel == 1) ? size_M : size_C;
-        int[] posXActual = (nivel == 1) ? posX_M : posX_C;
+        int[] posXActual = {0, 0, 0};
+        int[] posYActual= {0, 0, 0};
+        int[] sizeActual= {0, 0, 0};
+
+        if(nivel==1){
+            posXActual = posX_M;
+            posYActual =posY_M;
+            sizeActual=size_M;
+
+        }else if(nivel==2){
+            posXActual = posX_C;
+            posYActual =posY_C;
+            sizeActual=size_C;
+
+        }else if (nivel==3){
+            posXActual = posX_F;
+            posYActual =posY_F;
+            sizeActual=size_F;
+        }
+
 
         if (nivel == 1) {
             for (int i = 0; i < 3; i++) {
@@ -146,6 +180,11 @@ public class HUD {
             for (int i = 0; i < 3; i++) {
                 ItemsGris[i] = grisNivel2[i];
                 ItemsColor[i] = colorNivel2[i];
+            }
+        } else if (nivel==3){
+            for (int i = 0; i < 3; i++) {
+                ItemsGris[i]= grisNivel3[i];
+                ItemsColor [i]= colorNivel3[i];
             }
         }
 

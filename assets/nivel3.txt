@@ -52,7 +52,7 @@ estanteH, 895, 100
 estanteH, 1018, 100
 arbusto, 1160,140
 
-#Orquideas moradas
+#Orquideas Blancas
 flor, 220, 430,0
 flor, 600,560,0
 flor, 870, 330,0
@@ -60,7 +60,27 @@ flor, 1155, 570,0
 flor, 170, 280,0
 flor, 1160,200,0
 
-#Orquideas Blancas
+#Orquideas moradas
 flor, 870, 450,1
 flor, 990, 450,1
 flor, 780, 260,1
+flor, 175, 585,1
+flor, 225, 210,1
+flor, 425, 210,1
+flor, 1160, 400,1
+flor, 670, 610, 1
+
+#Orquídeas Amarillas
+flor, 720, 530,2
+flor, 600, 315,2
+flor, 260, 430,2
+flor, 360, 430,2
+flor, 460, 430,2
+flor, 1100,200,2
+flor, 1000,200,2
+flor, 900,200,2
+flor, 1100, 550,2
+flor, 1100, 450,2
+flor, 1100, 350,2
+flor, 350, 210,2
+flor, 170, 300,2
