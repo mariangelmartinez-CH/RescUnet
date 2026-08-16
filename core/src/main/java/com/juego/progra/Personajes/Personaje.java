@@ -18,8 +18,19 @@ public abstract class Personaje {
 
     public abstract void actualizar(MapasNiveles mapa, float delta);
 
+    public static final float TAMANO_NORMAL = 105;
+
     public void dibujar (SpriteBatch batch) {
-        batch.draw(imagen, x, y, 105, 105); // Lo dibuja en su x, y con tamaño 50x50
+        dibujar(batch, TAMANO_NORMAL);
+    }
+
+    //Lo mismo pero de otro tamaño, para el mapa principal, donde el personaje
+    //se ve mas grande. Se corre la mitad de lo que crece hacia la izquierda
+    //para que el CENTRO siga cayendo en el mismo sitio; el borde de abajo se
+    //queda donde estaba, asi que los pies casi no se mueven.
+    public void dibujar (SpriteBatch batch, float tamano) {
+        float corrimiento = (tamano - TAMANO_NORMAL) / 2f;
+        batch.draw(imagen, x - corrimiento, y, tamano, tamano);
     }
     public void dispose() {
         if (imagen != null) {

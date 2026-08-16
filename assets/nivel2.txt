@@ -1,107 +1,119 @@
 #Izquierda hacia arriba
-arbusto_flores, 105, 100
-arbusto_flores, 105, 172
-arbusto_flores, 105, 244
-arbusto_flores, 105, 316
+arbusto_flores, 162, 157
+arbusto_flores, 162, 222
+arbusto_flores, 162, 287
+arbusto_flores, 162, 352
 
 #Izquierda hacia al lado
-arbusto_flores, 170, 100
-arbusto_flores, 235, 100
-arbusto_flores, 300, 100
-arbusto_flores, 365, 100
-arbusto_flores, 430, 100
+arbusto_flores, 162, 92
+arbusto_flores, 222, 92
+arbusto_flores, 282, 92
+arbusto_flores, 342, 92
+arbusto_flores, 402, 92
 
 
 #Derecha hacia abajo
-arbusto_flores, 1185, 585
-arbusto_flores, 1185, 513
-arbusto_flores, 1185, 441
-arbusto_flores, 1185, 369
+arbusto_flores, 1198, 570
+arbusto_flores, 1198, 508
+arbusto_flores, 1198, 446
+arbusto_flores, 1198, 386
 
 #Derecha hacia a un lado
-arbusto_flores, 1120, 585
-arbusto_flores, 1055, 585
-arbusto_flores,  990, 585
-arbusto_flores,  925, 585
-arbusto_flores,  860, 585
+arbusto_flores, 1138, 570
+arbusto_flores, 1078, 570
+arbusto_flores, 1018, 570
+arbusto_flores, 958, 570
+arbusto_flores, 898, 570
 
 #Cruz superior izquierda
 #Ar
-arbusto, 300, 513
-arbusto_flores, 365, 513
+arbusto_flores, 473, 500
+arbusto, 414, 500
+arbusto_flores, 355, 500
 #I
-arbusto_flores, 247, 448
-arbusto, 247, 376
+arbusto_flores, 298, 448
+arbusto, 298, 383
+arbusto_flores, 298, 318
 #Ab
-arbusto_flores, 305, 311
-arbusto, 370, 311
+arbusto_flores, 473, 268
+arbusto, 414, 268
+arbusto_flores, 355, 268
 #D
-arbusto, 425, 448
-arbusto_flores, 425, 376
+arbusto_flores, 530, 448
+arbusto, 530, 383
+arbusto_flores, 530, 318
+
 
 #Cruz inferior derecha
 #Ab
-arbusto_flores, 990, 172
-arbusto, 925, 172
+arbusto_flores, 1035, 182
+arbusto, 976, 182
+arbusto_flores, 917, 182
 #D
-arbusto, 1040, 240
-arbusto_flores, 1040, 312
+arbusto, 1090, 240
+arbusto_flores, 1090, 305
+arbusto, 1090, 370
 #Ar
-arbusto, 985, 375
-arbusto_flores, 920, 375
+arbusto_flores, 1035, 420
+arbusto, 976, 420
+arbusto_flores, 917, 420
 #I
 arbusto_flores, 865, 240
-arbusto, 865, 312
+arbusto, 865, 305
+arbusto_flores, 865, 370
 
 #Triangulo Superior Derecha
-arbusto_flores,  795, 527
-arbusto,  860, 462
-arbusto,  730, 462
+arbusto_flores,  815, 550
+arbusto,  875, 490
+arbusto,  755, 490
+arbusto_flores,  815, 435
 
 #Triangulo inferior izquierda
-arbusto_flores, 485, 170
-arbusto, 420, 230
-arbusto, 545, 230
+arbusto, 535, 205
+arbusto_flores, 475, 150
+arbusto, 535, 92
+arbusto_flores, 595, 150
 
 #Esquinero izquierda superior
-arbusto_flores, 105, 585
-arbusto, 105, 514
-arbusto, 170, 585
+arbusto, 162, 505
+arbusto_flores, 162, 570
+arbusto, 222, 570
 
 #Esquinero derecha inferior
-arbusto_flores, 1180, 100
-arbusto, 1113, 100
-arbusto, 1180,175
+arbusto_flores, 1198, 92
+arbusto, 1138, 92
+arbusto, 1198,157
 
 #Conejos Blancos con Negro
-conejo, 140, 430,0
+conejo, 175, 430,0
 conejo, 1193, 285,0
-conejo, 503, 245, 0
-conejo, 817, 465,0
-conejo, 455, 530,0
+conejo, 485, 205, 0
+conejo, 910, 530,0
+conejo, 550, 500,0
 conejo, 875, 178,0
 
 #Conejos Marrones
-conejo, 350,585,1
-conejo, 350, 240,1
-conejo, 963,445,1
-conejo, 968,115,1
-conejo, 185, 172,1
-conejo, 1135,525,1
-conejo, 670,150,1
-conejo, 670,527,1
+conejo, 240,515,1
+conejo, 430, 390,1
+conejo, 990,310,1
+conejo, 1150,150,1
+conejo, 240, 150,1
+conejo, 1150,515,1
+conejo, 560,270,1
+conejo, 770,440,1
 
 #Conejos Beige
-conejo, 330,455,2
-conejo, 380, 385,2
-conejo, 950, 320,2
-conejo, 990, 240,2
-conejo, 503, 245,2
-conejo, 817, 465,2
-conejo, 185, 172,2
-conejo, 185, 250,2
-conejo, 1135,525,2
+conejo, 385, 440,2
+conejo, 470, 330,2
+conejo, 950, 360,2
+conejo, 1030, 250,2
+conejo, 550, 150,2
+conejo, 830, 500,2
+conejo, 670, 450,2
+conejo, 255, 200,2
+conejo, 670, 270,2
 conejo, 1135,455,2
-conejo, 520, 110,2
-conejo, 140, 430,2
-conejo, 1193, 285,2
+conejo, 175, 430,2
+conejo, 1200, 330,2
+conejo, 1200, 215,2
+

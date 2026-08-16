@@ -28,14 +28,15 @@ public class MapasNiveles implements Caminable {
     //Variables
     private ArrayList<Objetos> Listaobjetos;
     private float tiempo=0;
+    private int faseItem = 0;
+    private boolean nivelCompl = false;
     private Texture arbusto;
     private Texture arbustoFlores;
     private Texture estanteV;
     private Texture estanteH;
     private Texture fondo;
-    private Texture vallaInferior,vallaSuperior;
+    private Texture vallaInferior,vallaSuperior,vallaSuperior_Ab;
     private Texture fotosItem[][];
-    private int faseItem = 0;
 
     public int getFaseItem() {
         return faseItem;
@@ -47,12 +48,57 @@ public class MapasNiveles implements Caminable {
     //ZONAS FIJAS QUE BLOQUEAN - cambian por nivel
     private ArrayList<Rectangle> zonasBloqueadas = new ArrayList<>();
 
-    //ZONAS QUE SE PUEDEN PISAR AUNQUE QUEDEN FUERA DE LOS LIMITES, para las
-    //salidas por donde la reja esta abierta y el camino continua
+    //ENTRADA DE ABAJO: el trozo de camino que queda fuera de la arena y que SI
+    //se puede pisar siempre, porque esa reja esta abierta desde el principio.
+    //Es por donde entra el jugador y donde vuelve a aparecer al perder una vida.
     private ArrayList<Rectangle> zonasPermitidas = new ArrayList<>();
+
+    //SALIDA DE ARRIBA: el camino que sigue por encima de la reja del fondo.
+    //Empieza CERRADA. Solo se puede pasar cuando nivelCompl es true, que es el
+    //mismo momento en el que se cambia el sprite de la valla por el de abierta.
+    //Mientras siga cerrada, LIMITE_ARRIBA es el que no deja subir.
+    private Rectangle salidaArriba;
+
+    //Donde aparece el jugador al entrar al nivel y cada vez que pierde una vida:
+    //en el camino de abajo, justo debajo de la reja abierta.
+    private float spawnX, spawnY;
+
+    public float getSpawnX() { return spawnX; }
+    public float getSpawnY() { return spawnY; }
+    public boolean estaCompletado() { return nivelCompl; }
+
+    //SOLO PARA PROBAR: da el nivel por terminado sin recoger nada, para ver
+    //como cambia la reja y poder subir por el camino. Quitar al entregar.
+    public void completarDePrueba() { nivelCompl = true; }
+
+    //True cuando el jugador ya subio hasta el final del camino de arriba: esa
+    //es la señal de que se acabo el nivel y toca volver al mapa principal.
+    //No hace falta que toque el borde exacto (CaminarCelda lo frena unos pocos
+    //pixeles antes), asi que basta con que llegue al ultimo tramo del camino.
+    private static final float MARGEN_SALIDA = 15;
+
+    public boolean saliendoPorArriba(Rectangle caja) {
+        if (!nivelCompl || salidaArriba == null) return false;
+        float topeDelCamino = salidaArriba.y + salidaArriba.height;
+        return caja.y + caja.height >= topeDelCamino - MARGEN_SALIDA;
+    }
+
+    //ZONAS REDONDAS QUE BLOQUEAN: los charcos del nivel 2, que vienen pintados
+    //en el fondo y no son objetos del .txt. Se guardan como ovalos
+    //{centroX, centroY, radioX, radioY} y no como rectangulos porque con un
+    //rectangulo las cuatro esquinas taparian tierra por la que si se camina.
+    private ArrayList<float[]> zonasOvaladas = new ArrayList<>();
 
     //ROMPER ARBUSTOS: el tamaño del arbusto cambia por nivel, se guarda al cargar
     public static final float TIEMPO_PARA_ROMPER = 3f;
+
+    //HASTA DONDE LLEGA EL GOLPE. Antes esto se calculaba como 5 veces el ancho
+    //del arbusto, o sea 500px en el nivel 2 y 400 en el 1: se rompian matas a
+    //media pantalla. El golpe es cuerpo a cuerpo, solo tiene que alcanzar la
+    //mata que se tiene pegada. La celda con la que se busca ya mide 20, asi
+    //que con 15 de alcance se revisan unos 25px por delante del jugador, que
+    //es justo lo que hay desde su centro hasta la mata que lo esta frenando.
+    public static final float ALCANCE_GOLPE = 15f;
     private Texture arbustoDanado;
     private float anchoArbustoNivel = 70, altoArbustoNivel = 70;
 
@@ -76,8 +122,8 @@ public class MapasNiveles implements Caminable {
             int altItem = 60;
 
             if(nivel==2) {
-                tamArbusto = 90;
-                anchoArbs=110;
+                tamArbusto = 80;
+                anchoArbs=100;
 
                 anchItem= 75;
                 altItem=75;
@@ -142,7 +188,9 @@ public class MapasNiveles implements Caminable {
             rectanguloPersonaje.y < LIMITE_ABAJO ||
             rectanguloPersonaje.y + rectanguloPersonaje.height > LIMITE_ARRIBA) {
 
-            //Fuera de la arena solo se puede estar en las salidas del camino
+            //Fuera de la arena solo se puede estar en los caminos, y hay que
+            //entrar ENTERO en uno de ellos (contains, no overlaps): asi no se
+            //puede uno salir del camino a mitad de camino.
             boolean enSalida = false;
             for (int i = 0; i < zonasPermitidas.size(); i++) {
                 if (zonasPermitidas.get(i).contains(rectanguloPersonaje)) {
@@ -150,12 +198,26 @@ public class MapasNiveles implements Caminable {
                     break;
                 }
             }
+
+            //El camino de arriba solo cuenta si ya se recogio todo el nivel
+            if (!enSalida && nivelCompl && salidaArriba != null
+                    && salidaArriba.contains(rectanguloPersonaje)) {
+                enSalida = true;
+            }
+
             if (!enSalida) return false;
         }
 
         // LA CASA (uno o varios rectangulos, segun el nivel)
         for (int i = 0; i < zonasBloqueadas.size(); i++) {
             if (rectanguloPersonaje.overlaps(zonasBloqueadas.get(i))) {
+                return false;
+            }
+        }
+
+        // LOS CHARCOS DEL NIVEL 2
+        for (int i = 0; i < zonasOvaladas.size(); i++) {
+            if (tocaOvalo(rectanguloPersonaje, zonasOvaladas.get(i))) {
                 return false;
             }
         }
@@ -170,6 +232,32 @@ public class MapasNiveles implements Caminable {
         return true;
     }
 
+    //La caja de colision va en el CENTRO del sprite, pero los pies quedan unas
+    //35 unidades mas abajo (el dibujo del jugador termina a 13px del borde de
+    //su textura, y la caja esta a 50). Los arbustos son cosas altas y ahi da
+    //igual, pero el charco esta pintado EN EL SUELO: lo que no puede mojarse
+    //son los pies. Por eso la caja se prueba corrida hacia abajo, que es donde
+    //el personaje de verdad esta pisando. Es el mismo truco de MapaPrincipal.
+    private static final float DESFASE_PIES = 35;
+
+    //Dice si la caja del personaje toca el ovalo. Se busca el punto de la caja
+    //mas cercano al centro del charco y se mide esa distancia EN RADIOS: si da
+    //1 o menos, el punto cayo dentro. Dividir entre el radio de cada eje es lo
+    //que permite que el ovalo sea mas ancho que alto.
+    private boolean tocaOvalo(Rectangle r, float[] ovalo) {
+        float centroX = ovalo[0], centroY = ovalo[1];
+        float radioX  = ovalo[2], radioY  = ovalo[3];
+
+        float pieY = r.y - DESFASE_PIES;
+
+        float puntoX = Math.max(r.x, Math.min(centroX, r.x + r.width));
+        float puntoY = Math.max(pieY, Math.min(centroY, pieY + r.height));
+
+        float dx = (puntoX - centroX) / radioX;
+        float dy = (puntoY - centroY) / radioY;
+        return dx * dx + dy * dy <= 1;
+    }
+
     public void CambioFase(){
         boolean existeColor = false;
         for (int i = 0; i < Listaobjetos.size(); i++) {
@@ -180,7 +268,8 @@ public class MapasNiveles implements Caminable {
             }
         }
         if(!existeColor && faseItem == 2) {
-            System.out.println("Invernadero abierto");
+            nivelCompl=true;
+            System.out.println("Nivel Completado");
         } else if(!existeColor && faseItem < 2){
             faseItem++;
             System.out.println("Clase de Mariposa recolectada");
@@ -222,8 +311,8 @@ public class MapasNiveles implements Caminable {
     }
     public void dibujar (SpriteBatch batch, Jugador jugador, List<Enemigo> enemigos, int nivel){
         batch.draw(fondo,0,0,1408,768);
-        batch.draw(vallaSuperior,0,0,1408,768);
-
+        Texture vallaDibujar = nivelCompl ? vallaSuperior_Ab : vallaSuperior;
+        batch.draw(vallaDibujar, 0, 0, 1408, 768);
         tiempo += Gdx.graphics.getDeltaTime();
         ArrayList<Dibujable> arrayDibujo = new ArrayList<>();
 
@@ -310,7 +399,7 @@ public class MapasNiveles implements Caminable {
         }
 
         float paso = 5f;
-        float alcanceMax = 5 * (dx != 0 ? anchoArbustoNivel : altoArbustoNivel);
+        float alcanceMax = ALCANCE_GOLPE;
 
         for (float recorrido = paso; recorrido <= alcanceMax; recorrido += paso) {
             float cx = centroX + dx * recorrido;
@@ -344,6 +433,15 @@ public class MapasNiveles implements Caminable {
     private void configurarLimites(int nivel){
         zonasBloqueadas.clear();
         zonasPermitidas.clear();
+        zonasOvaladas.clear();
+        salidaArriba = null;
+
+        //Los dos caminos, el de entrada y el de salida, se midieron sobre el
+        //hueco REAL que dejan los sprites de la reja (vallaSuperior_Ab y
+        //vallaInferior), no sobre el fondo: el fondo del nivel 1 abajo es una
+        //terraza ancha, pero la reja solo deja pasar por el centro.
+        //Van en coordenadas de la CAJA del jugador, que queda unas 35 unidades
+        //por encima de sus pies, por eso el alto no coincide con lo que se ve.
 
         if (nivel == 1) {
             //La arena de tierra va de x 114..1292, y 119..583 en el dibujo.
@@ -354,11 +452,17 @@ public class MapasNiveles implements Caminable {
             LIMITE_ABAJO = 119;
             LIMITE_ARRIBA = 613;
 
-            //La reja esta abierta arriba y abajo por el centro, y por ahi sigue
-            //el camino de piedra. Esos dos pasillos salen de la arena, asi que
-            //se permiten aparte de los limites.
-            zonasPermitidas.add(new Rectangle(643, 560, 92, 140)); //salida de arriba
-            zonasPermitidas.add(new Rectangle(643,  60, 92,  85)); //salida de abajo
+            //El hueco de la reja del nivel 1 va de x 625 a 742. Se deja en 92
+            //de ancho, centrado, para que quede margen y no se pise el poste.
+            zonasPermitidas.add(new Rectangle(643, 45, 92, 100));  //entrada de abajo (siempre abierta)
+            salidaArriba = new Rectangle(643, 560, 92, 190);       //salida de arriba (solo al completar)
+
+            spawnX = 641;  //la caja queda en x 689, el centro del camino
+            //Mas abajo de lo que haria falta a proposito: el villano horizontal
+            //de abajo patrulla en y=80, y Main da por golpe |dx|<50 y |dy|<50,
+            //asi que con y=52 lo mataba nada mas aparecer. Con 25 la diferencia
+            //es de 55 y ya no lo alcanza en el sitio donde reaparece.
+            spawnY = 25;
         } else if (nivel == 3) {
             //Nivel 3: el piso de baldosas va de x 192..1209, y 194..648.
             //ARRIBA va mas alto que el piso porque la caja de colision queda
@@ -370,16 +474,39 @@ public class MapasNiveles implements Caminable {
 
             //Este nivel no tiene casa, asi que no se agrega ninguna zona fija.
             //Lo que bloquea son los estantes, que ya vienen en nivel3.txt.
+
+            //Todavia sin caminos de entrada ni salida: este nivel no esta listo.
+            spawnX = 480;
+            spawnY = 200;
         } else {
-            //Nivel 2: la tierra abierta (sin valla encima) va de x 147..1245, y 120..650.
+            //Nivel 2: la tierra abierta (sin valla encima) va de x 176..1281, y 112..629.
             //ARRIBA va mas alto que la tierra porque la caja de colision queda
-            //unos 40px por encima de los pies del sprite.
-            LIMITE_IZQ = 147;
-            LIMITE_DER = 1245;
+            //unos 40px por encima de los pies del sprite. IZQ y DER en cambio
+            //van igual que el borde dibujado, porque de lado la caja SI esta
+            //centrada en el sprite.
+            LIMITE_IZQ = 176;
+            LIMITE_DER = 1281;
             LIMITE_ABAJO = 125;
             LIMITE_ARRIBA = 680;
 
             //La casa ya no se dibuja en ningun nivel, asi que tampoco bloquea.
+
+            //El hueco de la reja del nivel 2 va de x 640 a 755. Se deja en 100
+            //de ancho, centrado, para no pisar el poste de ningun lado.
+            zonasPermitidas.add(new Rectangle(650, 45, 100, 100)); //entrada de abajo (siempre abierta)
+            salidaArriba = new Rectangle(650, 645, 100, 110);      //salida de arriba (solo al completar)
+
+            spawnX = 650;  //la caja queda en x 698, el centro del camino
+            spawnY = 42;   //los pies quedan en y 55, sobre el camino visible
+
+            //LOS DOS CHARCOS DEL CENTRO. Van pintados dentro de fondo2.png, no
+            //son objetos del .txt, por eso hay que bloquearlos aparte.
+            //Las medidas se sacaron midiendo el dibujo y convirtiendolas al
+            //mundo: el PNG mide 1380x752 pero se dibuja estirado a 1408x768, y
+            //ademas su Y va al reves. Se tomo el BORDE DE PIEDRA, no solo el
+            //agua, para que no se pueda pisar el anillo de piedras.
+            zonasOvaladas.add(new float[]{708, 400, 86, 54}); //charco grande
+            zonasOvaladas.add(new float[]{817, 323, 45, 35}); //charco pequeño
         }
     }
 
@@ -391,10 +518,13 @@ public class MapasNiveles implements Caminable {
         if(fondo != null) fondo.dispose();
         if(vallaSuperior != null) vallaSuperior.dispose();
         if(vallaInferior != null) vallaInferior.dispose();
+        if(vallaSuperior_Ab != null) vallaSuperior_Ab.dispose();
 
         fondo = new Texture("fondo" + nivel + ".png");
         vallaSuperior = new Texture("vallaSuperior" + nivel + ".png");
         vallaInferior = new Texture("vallaInferior" + nivel + ".png");
+        vallaSuperior_Ab = new Texture("vallaSuperior_Ab"+nivel+".png");
+        nivelCompl = false;
         arbusto = new Texture("arbusto"+nivel+".png");
         arbustoFlores = new Texture("arbustoFlores"+nivel+".png");
 
@@ -442,6 +572,7 @@ public class MapasNiveles implements Caminable {
         if(estanteV != null) estanteV.dispose();
         if(estanteH != null) estanteH.dispose();
         if(arbustoDanado != null) arbustoDanado.dispose();
+        if(vallaSuperior_Ab != null) vallaSuperior_Ab.dispose();
 
         if(fotosItem != null) {
             for (int i = 0; i < fotosItem.length; i++) {
