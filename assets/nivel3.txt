@@ -2,11 +2,10 @@
 estanteH, 160, 585
 estanteH, 285, 585
 estanteH, 410, 585
-estanteH, 535, 585
 estanteH, 1080, 585
 estanteH, 955, 585
 estanteH, 830, 585
-estanteH, 705, 585
+
 
 #Parte derecha empezando de arriba a abajo
 estanteV, 120, 420
@@ -63,12 +62,12 @@ flor, 1160,200,0
 #Orquideas moradas
 flor, 870, 450,1
 flor, 990, 450,1
-flor, 780, 260,1
+flor, 760, 610,1
 flor, 175, 585,1
 flor, 225, 210,1
 flor, 425, 210,1
 flor, 1160, 400,1
-flor, 670, 610, 1
+flor, 600, 610, 1
 
 #Orquídeas Amarillas
 flor, 720, 530,2

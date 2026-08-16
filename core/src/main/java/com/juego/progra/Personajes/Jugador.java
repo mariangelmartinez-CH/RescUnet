@@ -5,9 +5,12 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.juego.progra.Mapas.Caminable;
 import com.juego.progra.Mapas.MapasNiveles;
+
+import java.util.ArrayList;
 
 public class Jugador extends Personaje {
     private static final float INVENCIBILIDAD = 1.2f;
@@ -15,43 +18,81 @@ public class Jugador extends Personaje {
     private int vidas=5;
     private float tiempoSinPerderVidas = 0;
 
-    //Donde reaparece al recibir un golpe. Cambia segun el nivel, porque el
-    //punto del nivel 1 cae dentro de un estante en el nivel 3.
+
     private float spawnX, spawnY;
 
-    private Texture abajoQuieto, abajoPie1, abajoPie2;
-    private Texture arribaQuieto, arribaPie1, arribaPie2;
-    private Texture derechaQuieto, derechaPie1, derechaPie2;
-    private Texture izquierdaQuieto, izquierdaPie1, izquierdaPie2;
 
-    private Texture direccionQuieta, direccionPie1, direccionPie2;
+    private TextureRegion abajoQuieto, abajoPie1, abajoPie2;
+    private TextureRegion arribaQuieto, arribaPie1, arribaPie2;
+    private TextureRegion derechaQuieto, derechaPie1, derechaPie2;
+    private TextureRegion izquierdaQuieto, izquierdaPie1, izquierdaPie2;
+
+    private TextureRegion direccionQuieta, direccionPie1, direccionPie2;
+    private TextureRegion regionActual;
     private float tiempoAnimacion = 0;
     private String direccionMirando = "abajo";
 
+
+    private ArrayList<Texture> texturasPropias = new ArrayList<>();
+
+
     public Jugador(float x, float y) {
-        super(x, y, "jugador1DOWN.png");
+        this(x, y, 2);
+    }
+
+
+    public Jugador(float x, float y, int personaje) {
+        super(x, y, personaje == 1 ? "jugador2.png" : "jugador1DOWN.png");
         this.cajaTamañito = 4; //mas chica que la de los enemigos, para pasar por los huecos angostos
         this.spawnX = x;
         this.spawnY = y;
-        abajoQuieto = imagen;
-        abajoPie1 = new Texture("jugador1_abajoca.png");
-        abajoPie2 = new Texture("jugador1_abajocad.png");
+        texturasPropias.add(imagen);
 
-        arribaQuieto = new Texture("jugador1UP.png");
-        arribaPie1 = new Texture("jugador1_arriba_ca.png");
-        arribaPie2 = new Texture("jugador1_arribacad.png");
-
-        derechaQuieto = new Texture("jugador1.png");
-        derechaPie1 = new Texture("jugador1_derechaca.png");
-        derechaPie2 = new Texture("jugador1_derechacad.png");
-
-        izquierdaQuieto = new Texture("jugador1IZQ.png");
-        izquierdaPie1 = new Texture("jugador1_izqca.png");
-        izquierdaPie2 = new Texture("jugador1_izquierdacad.png");
+        if (personaje == 1) {
+            cargarHojaNiña();
+        } else {
+            cargarImagenesNiño();
+        }
 
         direccionQuieta = abajoQuieto;
         direccionPie1 = abajoPie1;
         direccionPie2 = abajoPie2;
+        regionActual = direccionQuieta;
+    }
+
+    private void cargarHojaNiña() {
+        TextureRegion[][] celdas = TextureRegion.split(imagen,
+                imagen.getWidth() / 4, imagen.getHeight() / 3);
+
+        abajoQuieto     = celdas[0][0]; abajoPie1     = celdas[1][0]; abajoPie2     = celdas[2][0];
+        arribaQuieto    = celdas[0][1]; arribaPie1    = celdas[1][1]; arribaPie2    = celdas[2][1];
+        derechaQuieto   = celdas[0][2]; derechaPie1   = celdas[1][2]; derechaPie2   = celdas[2][2];
+        izquierdaQuieto = celdas[0][3]; izquierdaPie1 = celdas[1][3]; izquierdaPie2 = celdas[2][3];
+    }
+
+
+    private void cargarImagenesNiño() {
+        abajoQuieto = new TextureRegion(imagen);
+        abajoPie1 = nuevaRegion("jugador1_abajoca.png");
+        abajoPie2 = nuevaRegion("jugador1_abajocad.png");
+
+        arribaQuieto = nuevaRegion("jugador1UP.png");
+        arribaPie1 = nuevaRegion("jugador1_arriba_ca.png");
+        arribaPie2 = nuevaRegion("jugador1_arribacad.png");
+
+        derechaQuieto = nuevaRegion("jugador1.png");
+        derechaPie1 = nuevaRegion("jugador1_derechaca.png");
+        derechaPie2 = nuevaRegion("jugador1_derechacad.png");
+
+        izquierdaQuieto = nuevaRegion("jugador1IZQ.png");
+        izquierdaPie1 = nuevaRegion("jugador1_izqca.png");
+        izquierdaPie2 = nuevaRegion("jugador1_izquierdacad.png");
+    }
+
+    private TextureRegion nuevaRegion(String ruta) {
+        Texture t = new Texture(ruta);
+        texturasPropias.add(t);
+        return new TextureRegion(t);
     }
 
     @Override
@@ -60,8 +101,7 @@ public class Jugador extends Personaje {
 
         mapa.obtenerObjeto(caja(x, y));
 
-        //ESPACIO: rompe el arbusto que este justo en la direccion que mira.
-        //Se manda el CENTRO de la caja, no la esquina del sprite.
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             Rectangle miCaja = caja(x, y);
             mapa.dispararLinea(miCaja.x + miCaja.width / 2f,
@@ -70,8 +110,7 @@ public class Jugador extends Personaje {
         }
     }
 
-    //Solo el movimiento y la animacion. Sirve igual en un nivel que en el
-    //mapa principal, porque los dos saben responder CaminarCelda.
+
     public void moverEn(Caminable mapa, float delta) {
         if (tiempoSinPerderVidas > 0) tiempoSinPerderVidas -= delta;
 
@@ -115,36 +154,42 @@ public class Jugador extends Personaje {
             if (esHorizontal) {
                 int frame = (int) ((tiempoAnimacion % 0.6f) / 0.15f);
                 switch (frame) {
-                    case 0: imagen = direccionPie1; break;
-                    case 2: imagen = direccionPie2; break;
-                    default: imagen = direccionQuieta; break;
+                    case 0: regionActual = direccionPie1; break;
+                    case 2: regionActual = direccionPie2; break;
+                    default: regionActual = direccionQuieta; break;
                 }
             } else {
                 int frame = (int) ((tiempoAnimacion % 0.4f) / 0.2f);
-                imagen = (frame == 0) ? direccionPie1 : direccionPie2;
+                regionActual = (frame == 0) ? direccionPie1 : direccionPie2;
             }
         } else {
             tiempoAnimacion = 0;
-            imagen = direccionQuieta;
+            regionActual = direccionQuieta;
         }
     }
 
-    //Al recibir el golpe alterna rojo - normal - rojo y despues vuelve a la
-    //normalidad. Se pinta el mismo sprite tintado, no hace falta otra imagen.
+
     @Override
     public void dibujar(SpriteBatch batch) {
+        dibujar(batch, TAMANO_NORMAL);
+    }
+
+
+    @Override
+    public void dibujar(SpriteBatch batch, float tamano) {
         boolean rojo = false;
         if (tiempoSinPerderVidas > 0) {
             int tramo = (int) (tiempoSinPerderVidas / (INVENCIBILIDAD / 5f));
             rojo = (tramo % 2 == 0); //alterna rojo y normal en 5 tramos
         }
 
+        float corrimiento = (tamano - TAMANO_NORMAL) / 2f;
         if (rojo) {
             batch.setColor(1f, 0.3f, 0.3f, 1f);
-            super.dibujar(batch);
+            batch.draw(regionActual, x - corrimiento, y, tamano, tamano);
             batch.setColor(Color.WHITE); //se devuelve el color o se tiñe todo lo demas
         } else {
-            super.dibujar(batch);
+            batch.draw(regionActual, x - corrimiento, y, tamano, tamano);
         }
     }
 
@@ -173,9 +218,9 @@ public class Jugador extends Personaje {
 
     @Override
     public void dispose() {
-        abajoQuieto.dispose(); abajoPie1.dispose(); abajoPie2.dispose();
-        arribaQuieto.dispose(); arribaPie1.dispose(); arribaPie2.dispose();
-        derechaQuieto.dispose(); derechaPie1.dispose(); derechaPie2.dispose();
-        izquierdaQuieto.dispose(); izquierdaPie1.dispose(); izquierdaPie2.dispose();
+        for (Texture t : texturasPropias) {
+            t.dispose();
+        }
+        texturasPropias.clear();
     }
 }

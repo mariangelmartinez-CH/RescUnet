@@ -10,9 +10,7 @@ public class Objetos {
     public Texture[] aniMariposas;
     public Rectangle cajaObstaculo;
 
-    //Los estantes tienen mucho margen transparente alrededor del dibujo, asi
-    //que su caja de choque es mas chica que la de dibujo. En los demas objetos
-    //las dos son la misma.
+
     public Rectangle cajaColision;
     public String tipo;
     public int colorItem; //0 Azul,  1 Amarillo, 2 Rosa
@@ -21,7 +19,7 @@ public class Objetos {
     public boolean indestructible;
     public float tiempoDañado = 0;
 
-    //Constructor para Objetos Estáticos (Arbustos y estantes)
+    //constructor para Objetos Estáticos (Arbustos y estantes)
     public Objetos(Texture imagen, int x, int y, int ancho, int largo, String tipo) {
         this.imagen=imagen;
         this.cajaObstaculo = new Rectangle(x,y,ancho,largo);
@@ -36,10 +34,7 @@ public class Objetos {
             this.indestructible=true;
         }
 
-        //Todos estos PNG tienen margen transparente alrededor del dibujo, asi
-        //que la caja de choque se ajusta a lo que de verdad se ve. Si no, dos
-        //matas que en pantalla se ven separadas se tocan por dentro y cierran
-        //el paso. Las proporciones salen de medir cada PNG.
+
         if(tipo.equals("estanteV")){
             this.cajaColision = new Rectangle(x + ancho*0.29f, y + largo*0.08f,
                                               ancho*0.39f, largo*0.86f);
@@ -61,7 +56,7 @@ public class Objetos {
         }
     }
 
-    //Constructor para Items
+    //constructor para Items
     public Objetos(Texture[] animacion, int x, int y, int ancho, int largo, String tipo, int color) {
         this.aniMariposas=animacion;
         this.cajaObstaculo = new Rectangle(x,y,ancho,largo);
@@ -73,7 +68,7 @@ public class Objetos {
         this.cajaColision = this.cajaObstaculo;
     }
 
-    //Objetos Fijos
+    //objetos Fijos
     public void dibujar(SpriteBatch batch) {
         batch.draw(imagen, cajaObstaculo.x, cajaObstaculo.y, cajaObstaculo.width, cajaObstaculo.height);
     }
