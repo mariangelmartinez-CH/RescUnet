@@ -36,13 +36,26 @@ public class Objetos {
             this.indestructible=true;
         }
 
-        //Proporciones medidas sobre los PNG: el mueble no llena su recuadro
+        //Todos estos PNG tienen margen transparente alrededor del dibujo, asi
+        //que la caja de choque se ajusta a lo que de verdad se ve. Si no, dos
+        //matas que en pantalla se ven separadas se tocan por dentro y cierran
+        //el paso. Las proporciones salen de medir cada PNG.
         if(tipo.equals("estanteV")){
             this.cajaColision = new Rectangle(x + ancho*0.29f, y + largo*0.08f,
                                               ancho*0.39f, largo*0.86f);
         }else if(tipo.equals("estanteH")){
             this.cajaColision = new Rectangle(x + ancho*0.10f, y + largo*0.21f,
                                               ancho*0.84f, largo*0.64f);
+        }else if(tipo.equals("arbusto") || tipo.equals("arbusto_flores")){
+            if(ancho == largo){
+                //Matas cuadradas de 80x80 (niveles 1 y 3)
+                this.cajaColision = new Rectangle(x + ancho*0.09f, y + largo*0.13f,
+                                                  ancho*0.82f, largo*0.78f);
+            }else{
+                //Matas anchas de 110x90 (nivel 2)
+                this.cajaColision = new Rectangle(x + ancho*0.17f, y + largo*0.05f,
+                                                  ancho*0.66f, largo*0.91f);
+            }
         }else{
             this.cajaColision = this.cajaObstaculo;
         }

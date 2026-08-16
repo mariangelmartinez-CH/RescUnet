@@ -44,8 +44,12 @@ public class MapasNiveles implements Caminable {
     //LIMITES DEL MUNDO: cambian en cada nivel, se asignan en cargarNivel()
     private float LIMITE_IZQ, LIMITE_DER, LIMITE_ABAJO, LIMITE_ARRIBA;
 
-    //ZONAS FIJAS QUE BLOQUEAN (la casa) - tambien cambian por nivel
+    //ZONAS FIJAS QUE BLOQUEAN - cambian por nivel
     private ArrayList<Rectangle> zonasBloqueadas = new ArrayList<>();
+
+    //ZONAS QUE SE PUEDEN PISAR AUNQUE QUEDEN FUERA DE LOS LIMITES, para las
+    //salidas por donde la reja esta abierta y el camino continua
+    private ArrayList<Rectangle> zonasPermitidas = new ArrayList<>();
 
     //ROMPER ARBUSTOS: el tamaño del arbusto cambia por nivel, se guarda al cargar
     public static final float TIEMPO_PARA_ROMPER = 3f;
@@ -137,7 +141,16 @@ public class MapasNiveles implements Caminable {
             rectanguloPersonaje.x + rectanguloPersonaje.width > LIMITE_DER ||
             rectanguloPersonaje.y < LIMITE_ABAJO ||
             rectanguloPersonaje.y + rectanguloPersonaje.height > LIMITE_ARRIBA) {
-            return false;
+
+            //Fuera de la arena solo se puede estar en las salidas del camino
+            boolean enSalida = false;
+            for (int i = 0; i < zonasPermitidas.size(); i++) {
+                if (zonasPermitidas.get(i).contains(rectanguloPersonaje)) {
+                    enSalida = true;
+                    break;
+                }
+            }
+            if (!enSalida) return false;
         }
 
         // LA CASA (uno o varios rectangulos, segun el nivel)
@@ -330,20 +343,22 @@ public class MapasNiveles implements Caminable {
     //y que rectangulos fijos bloquean (la casa). Se llama desde cargarNivel.
     private void configurarLimites(int nivel){
         zonasBloqueadas.clear();
+        zonasPermitidas.clear();
 
         if (nivel == 1) {
-            LIMITE_IZQ = 125;
-            LIMITE_DER = 1279;
-            LIMITE_ABAJO = 140;
-            LIMITE_ARRIBA = 590;
+            //La arena de tierra va de x 114..1292, y 119..583 en el dibujo.
+            //ARRIBA va mas alto que la arena porque la caja de colision queda
+            //unos 30px por encima de los pies del sprite.
+            LIMITE_IZQ = 114;
+            LIMITE_DER = 1292;
+            LIMITE_ABAJO = 119;
+            LIMITE_ARRIBA = 613;
 
-            //Casa: medida sobre el dibujo real (465,257,490,260)
-            //La casa se bloquea en tres partes: las dos paredes laterales frenan
-            //al ras del suelo, y la del centro empieza mas arriba para que el
-            //jugador pueda subir los escalones y quedar pegado a la puerta.
-            zonasBloqueadas.add(new Rectangle(567, 347, 71, 143));  //pared izquierda
-            zonasBloqueadas.add(new Rectangle(783, 347, 71, 143));  //pared derecha
-            zonasBloqueadas.add(new Rectangle(638, 365, 145, 125)); //puerta (escalones libres)
+            //La reja esta abierta arriba y abajo por el centro, y por ahi sigue
+            //el camino de piedra. Esos dos pasillos salen de la arena, asi que
+            //se permiten aparte de los limites.
+            zonasPermitidas.add(new Rectangle(643, 560, 92, 140)); //salida de arriba
+            zonasPermitidas.add(new Rectangle(643,  60, 92,  85)); //salida de abajo
         } else if (nivel == 3) {
             //Nivel 3: el piso de baldosas va de x 192..1209, y 194..648.
             //ARRIBA va mas alto que el piso porque la caja de colision queda
@@ -364,13 +379,7 @@ public class MapasNiveles implements Caminable {
             LIMITE_ABAJO = 125;
             LIMITE_ARRIBA = 680;
 
-            //La casa se dibuja igual que en el nivel 1, asi que bloquea igual
-            //La casa se bloquea en tres partes: las dos paredes laterales frenan
-            //al ras del suelo, y la del centro empieza mas arriba para que el
-            //jugador pueda subir los escalones y quedar pegado a la puerta.
-            zonasBloqueadas.add(new Rectangle(567, 347, 71, 143));  //pared izquierda
-            zonasBloqueadas.add(new Rectangle(783, 347, 71, 143));  //pared derecha
-            zonasBloqueadas.add(new Rectangle(638, 365, 145, 125)); //puerta (escalones libres)
+            //La casa ya no se dibuja en ningun nivel, asi que tampoco bloquea.
         }
     }
 

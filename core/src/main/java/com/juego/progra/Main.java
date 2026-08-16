@@ -84,13 +84,12 @@ public class Main extends Game {
 
         enemigos = new ArrayList<>();
         if (nivelActual == 1) {
-            // Enemigos del Nivel 1
+            // Nivel 1: las dos filas de arriba y abajo se recorren enteras
+            // (1025px cada una), por debajo y por encima de los setos.
             enemigos.add(new Enemigo(700, 520, Enemigo.Tipo.HORIZONTAL));
-            enemigos.add(new Enemigo(700, 230, Enemigo.Tipo.ALEATORIO));
-
-            Enemigo enemigoAbajo = new Enemigo(700, 100, Enemigo.Tipo.HORIZONTAL);
-            enemigoAbajo.setCajaTamañito(15);
-            enemigos.add(enemigoAbajo);
+            enemigos.add(new Enemigo(700, 80,  Enemigo.Tipo.HORIZONTAL));
+            // El del medio va donde tiene mas hueco alrededor (225x230)
+            enemigos.add(new Enemigo(1020, 180, Enemigo.Tipo.ALEATORIO));
 
         } else if (nivelActual == 2) {
             // Nivel 2: un zorro en cada esquina. El tipo va segun el hueco que
