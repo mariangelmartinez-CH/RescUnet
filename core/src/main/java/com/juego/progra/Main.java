@@ -25,24 +25,21 @@ public class Main extends Game {
     private List<Enemigo> enemigos;
     private int nivelActual = 1;
 
-    // MAPA PRINCIPAL (en pruebas): se entra con M y se sale con 1, 2 o 3
+
     private MapaPrincipal mapaPrincipal;
     private boolean enMapaPrincipal = false;
 
-    //La animacion de entrar a un nivel: puño arriba y hojas que se cierran
+
     private Transicion transicion;
 
-    //En el mapa principal el personaje se ve mas grande que dentro de un
-    //nivel. Vale tanto para el sprite normal como para el del puño.
+
+    private Menu menu;
+    private boolean enMenu = true;
+    private SeleccionPersonaje seleccionPersonaje;
+    private boolean enSeleccion = false;
+    private int personajeElegido = 2;
     private static final float TAMANO_EN_EL_MAPA = 125;
 
-    //CUANTO SE TIENEN QUE ACERCAR jugador y enemigo para que haga daño.
-    //Los dos sprites van centrados igual dentro de su cuadro de 105, asi que
-    //restar sus x (o sus y) da directamente la distancia entre sus centros.
-    //Medido sobre los dibujos: el cuerpo del jugador ocupa 41 de ancho y 84 de
-    //alto, y el del zorro unos 50 de ancho mirando arriba o abajo. O sea que
-    //rozarse es estar a unos 45 en X. Se deja por debajo de eso a proposito,
-    //para que haya que solaparse de verdad y no valga con pasar cerca.
     private static final float CONTACTO_X = 35;
     private static final float CONTACTO_Y = 45;
 
@@ -56,43 +53,36 @@ public class Main extends Game {
         mapa = new MapasNiveles();
         mapaPrincipal = new MapaPrincipal();
         transicion = new Transicion();
+        menu = new Menu();
+        seleccionPersonaje = new SeleccionPersonaje();
         HUD = new HUD();
         mapa.setHud(HUD);
-        //El jugador lo crea cambiarNivel(), en el punto de aparicion del nivel
 
-        // HERRAMIENTA DE DEBUG: al hacer clic imprime la coordenada del mundo
-        Gdx.input.setInputProcessor(new com.badlogic.gdx.InputAdapter() {
-            @Override
-            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                int yCorregida = Gdx.graphics.getHeight() - screenY;
-                System.out.println("clic, " + screenX + ", " + yCorregida);
-                return true;
-            }
-        });
+
+        com.badlogic.gdx.InputMultiplexer multiplexer = new com.badlogic.gdx.InputMultiplexer();
+        multiplexer.addProcessor(HUD.getStage());
+        Gdx.input.setInputProcessor(multiplexer);
 
         cambiarNivel(1);
     }
 
-    //Cambia al jugador de sitio. Se suelta el anterior porque cada Jugador
-    //carga sus 12 texturas en el constructor, y si no se irian acumulando en
-    //cada cambio de nivel.
+
     private void nuevoJugador(float x, float y) {
         if (jugador != null) {
             jugador.dispose();
         }
-        jugador = new Jugador(x, y);
+        jugador = new Jugador(x, y, personajeElegido);
     }
 
-    //Entra al mapa de seleccion de niveles y pone al jugador en el arco
+
     private void irAlMapaPrincipal() {
         enMapaPrincipal = true;
         nuevoJugador(mapaPrincipal.getSpawnX(), mapaPrincipal.getSpawnY());
     }
 
-    //Se acaba de ganar el nivel: se enciende su medalla y el jugador aparece
-    //de pie sobre esa misma piedra, listo para seguir hacia la siguiente.
+
     private void volverAlMapaGanando() {
-        //Con esta comparacion no se pierde progreso al repetir un nivel ya ganado
+
         if (mapaPrincipal.getNivelesGanados() < nivelActual) {
             mapaPrincipal.setNivelesGanados(nivelActual);
         }
@@ -114,49 +104,33 @@ public class Main extends Game {
         mapa.cargarNivel(nivelActual);
         HUD.actualizarHud(nivelActual);
 
-        //El punto de aparicion lo decide el mapa: en los niveles 1 y 2 es el
-        //camino de abajo, donde la reja esta abierta. El Jugador se guarda ese
-        //punto en su constructor, asi que tambien es donde reaparece cada vez
-        //que pierde una vida.
+
         nuevoJugador(mapa.getSpawnX(), mapa.getSpawnY());
 
         enemigos = new ArrayList<>();
         if (nivelActual == 1) {
-            // Nivel 1: las dos filas de arriba y abajo se recorren enteras
-            // (1025px cada una), por debajo y por encima de los setos.
+
             enemigos.add(new Enemigo(700, 520, Enemigo.Tipo.HORIZONTAL));
             enemigos.add(new Enemigo(700, 80,  Enemigo.Tipo.HORIZONTAL));
-            // El del medio va donde tiene mas hueco alrededor (225x230)
             enemigos.add(new Enemigo(1020, 180, Enemigo.Tipo.ALEATORIO));
 
         } else if (nivelActual == 2) {
-            // Nivel 2: un zorro en cada esquina. El tipo va segun el hueco que
-            // tiene cada uno: los de pasillo largo patrullan en horizontal,
-            // los que tienen mas altura que ancho se mueven al azar.
-            // OJO: estas posiciones se recalcularon sobre el nivel2.txt nuevo.
-            // Tres de las anteriores caian DENTRO de la caja de un arbusto, y
-            // ahi el zorro no se puede mover para ningun lado: CaminarCelda le
-            // dice que no a las cuatro direcciones, asi que se queda pegado
-            // rebotando en el sitio. Al lado va el hueco libre que tiene cada
-            // uno, medido con la misma cuenta que usa CaminarCelda.
             enemigos.add(new Enemigo(345, 590, Enemigo.Tipo.HORIZONTAL, 2));  // arriba izq, 594px de pasillo
             enemigos.add(new Enemigo(1000, 470, Enemigo.Tipo.HORIZONTAL, 2)); // arriba der, 241px por encima de los arbustos
             enemigos.add(new Enemigo(300, 175, Enemigo.Tipo.ALEATORIO, 2));   // abajo izq, 231x137
             enemigos.add(new Enemigo(1150, 250, Enemigo.Tipo.ALEATORIO, 2));  // abajo der, 56x389 (el pasillo pegado a la reja)
         } else if (nivelActual == 3) {
-            // Nivel 3: dos serpientes al azar.
+
             enemigos.add(new Enemigo(480, 300, Enemigo.Tipo.ALEATORIO, 3)); // centro, suelta por el nivel
-            // Esta queda encerrada en el cuadro de estantes de arriba a la
-            // izquierda, para que entrar ahi cueste mas caro.
+
             enemigos.add(new Enemigo(190, 420, Enemigo.Tipo.ALEATORIO, 3));
-            // Esta sube y baja por el pasillo vertical mas largo del nivel (405px)
             enemigos.add(new Enemigo(730, 160, Enemigo.Tipo.VERTICAL, 3));
         }
     }
 
     @Override
     public void render(){
-        // --- TECLAS DE PRUEBA TEMPORALES: 1, 2 y 3 cambian de nivel ---
+
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.NUM_1)) {
             cambiarNivel(1);
             Gdx.app.log("PRUEBA", "Nivel 1");
@@ -184,41 +158,56 @@ public class Main extends Game {
             mapaPrincipal.setNivelesGanados(mapaPrincipal.getNivelesGanados() + 1);
             Gdx.app.log("PRUEBA", "Medallas encendidas: " + mapaPrincipal.getNivelesGanados());
         }
-        // ---------------------------------
+
 
         Gdx.gl.glClearColor(0.15f, 0.15f, 0.15f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        float delta = Gdx.graphics.getDeltaTime();
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(),
+                                Gdx.graphics.getBackBufferHeight());
 
-        //La transicion manda sobre todo lo demas: mientras corre, ni el
-        //jugador ni los enemigos se mueven. Se adelanta una sola vez por
-        //frame, antes de decidir que se dibuja.
+        float delta = Gdx.graphics.getDeltaTime();
         boolean enTransicion = transicion.estaActiva();
         if (enTransicion && transicion.actualizar(delta)) {
-            //Justo aqui la pantalla esta tapada por las hojas, asi que es
-            //cuando se cambia de sitio y no se ve el corte
-            if (transicion.getNivelDestino() > 0) {
-                cambiarNivel(transicion.getNivelDestino());
-            } else {
+            int destino = transicion.getNivelDestino();
+            if (destino > 0) {
+                cambiarNivel(destino);
+            } else if (destino == 0) {
                 volverAlMapaGanando();
+            } else if (destino == -1) {
+                enMenu = false;
+                enSeleccion = true;
+            } else if (destino == -2) {
+                enSeleccion = false;
+                irAlMapaPrincipal();
             }
         }
 
-        // --- LO QUE SE MUEVE ---
-        //Los animalitos del jardin siguen a lo suyo aunque el jugador este en
-        //medio de una transicion: son ambiente, y verlos congelados se notaria.
+
         if (enMapaPrincipal) {
             mapaPrincipal.actualizarAnimales(delta);
         }
 
         if (!enTransicion) {
-            if (enMapaPrincipal) {
-                //En el mapa solo hay movimiento: ni enemigos, ni items, ni vidas
+            if (enMenu) {
+                Menu.Opcion elegida = menu.actualizar();
+                if (elegida == Menu.Opcion.JUGAR) {
+                    transicion.empezarPantalla(-1);
+                } else if (elegida == Menu.Opcion.SALIR) {
+                    Gdx.app.exit();
+                }
+
+            } else if (enSeleccion) {
+                SeleccionPersonaje.Opcion elegido = seleccionPersonaje.actualizar();
+                if (elegido != SeleccionPersonaje.Opcion.NINGUNA) {
+                    personajeElegido = (elegido == SeleccionPersonaje.Opcion.PERSONAJE1) ? 1 : 2;
+                    Gdx.app.log("SELECCION", "Personaje elegido: " + elegido);
+                    transicion.empezarPantalla(-2);
+                }
+            } else if (enMapaPrincipal) {
+
                 jugador.moverEn(mapaPrincipal, delta);
 
-                //ESPACIO parado encima de una piedra ya desbloqueada: entra
-                //a ese nivel. Si no esta sobre ninguna, no pasa nada.
                 if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
                     int nivel = mapaPrincipal.nivelDisponible(
                             jugador.caja(jugador.getX(), jugador.getY()));
@@ -237,8 +226,6 @@ public class Main extends Game {
                     }
                 }
 
-                //Subio del todo por el camino de arriba (que solo esta abierto
-                //si ya recogio los 27 objetos): nivel ganado, se vuelve al mapa.
                 if (mapa.saliendoPorArriba(jugador.caja(jugador.getX(), jugador.getY()))) {
                     transicion.empezarVuelta();
                     Gdx.app.log("JUEGO", "Nivel " + nivelActual + " ganado");
@@ -246,9 +233,6 @@ public class Main extends Game {
             }
         }
 
-        // --- LO QUE SE DIBUJA ---
-        //Mientras dura el efecto, la escena no se pinta en la pantalla sino en
-        //una textura aparte, para poder pixelarla entera antes de enseñarla.
         if (transicion.pixelando()) {
             transicion.empezarCaptura();
             dibujarEscena();
@@ -258,18 +242,22 @@ public class Main extends Game {
         }
     }
 
-    //Todo el juego tal cual, sin efectos. Va aparte porque hay que poder
-    //pedirlo dos veces: una para la pantalla y otra para la textura del efecto.
     private void dibujarEscena() {
-        if (enMapaPrincipal) {
+        if (enMenu) {
+            batch.begin();
+            menu.dibujar(batch);
+            batch.end();
+        } else if (enSeleccion) {
+            batch.begin();
+            seleccionPersonaje.dibujar(batch);
+            batch.end();
+        } else if (enMapaPrincipal) {
             batch.begin();
             mapaPrincipal.dibujarFondo(batch);
-            //Los animales van entre el fondo y el jugador: asi el arco y los
-            //arboles de dibujarFrente los tapan cuando pasan por detras
             mapaPrincipal.dibujarAnimales(batch);
-            //Durante la pose se cambia el sprite normal por el del puño arriba
+
             if (transicion.mostrandoPose()) {
-                transicion.dibujarPuno(batch, jugador, TAMANO_EN_EL_MAPA);
+                transicion.dibujarPuno(batch, jugador, TAMANO_EN_EL_MAPA, personajeElegido);
             } else {
                 jugador.dibujar(batch, TAMANO_EN_EL_MAPA);
             }
@@ -283,6 +271,14 @@ public class Main extends Game {
             HUD.render();
         }
     }
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        // Si HUD es accesible desde Main, actualiza su viewport:
+        if (HUD != null && HUD.getStage() != null) {
+            HUD.getStage().getViewport().update(width, height, true);
+        }
+    }
 
     @Override
     public void dispose() {
@@ -294,5 +290,7 @@ public class Main extends Game {
         mapa.dipose();
         mapaPrincipal.dispose();
         transicion.dispose();
+        menu.dispose();
+        seleccionPersonaje.dispose();
     }
 }

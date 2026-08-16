@@ -8,14 +8,25 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+
 public class HUD {
+    private MenuConf menu;
     // Corazones
     private Texture corazonLleno;
     private Texture corazonVacio;
 
-    // Texturas pre-cargadas por nivel (Evita fugas de memoria)
+    //Botones
+    private ImageButton btnPausa;
+    private Texture texturePausa;
+    private Texture texturePausaAb;
+
+    //Texturas de los Objetos por nivel
     private Texture[] grisNivel1, colorNivel1;
     private Texture[] grisNivel2, colorNivel2;
     private Texture[] grisNivel3, colorNivel3;
@@ -46,13 +57,34 @@ public class HUD {
     public HUD() {
         corazonLleno = new Texture("CorazonLleno.png");
         corazonVacio = new Texture("CorazonVacio.png");
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new FitViewport(1550, 780));
+        menu = new MenuConf(stage);
 
         texturaPaneles = new Texture[]{
             new Texture("panelPrimero.png"),
             new Texture("panelSegundo.png"),
             new Texture("panelTercero.png")
         };
+
+        // Botones
+        texturePausa = new Texture("btnPausa.png");
+        texturePausaAb = new Texture("btnPausaAb.png");
+
+        ImageButton.ImageButtonStyle estiloBtn = new ImageButton.ImageButtonStyle();
+        estiloBtn.imageUp = new TextureRegionDrawable(new TextureRegion(texturePausa));
+        estiloBtn.imageDown = new TextureRegionDrawable(new TextureRegion(texturePausaAb));
+
+        btnPausa = new ImageButton(estiloBtn);
+        btnPausa.setPosition(20, 630);
+        btnPausa.setSize(150, 150);
+
+        btnPausa.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                menu.cambiarVisibilidad();
+            }
+        });
+        stage.addActor(btnPausa);
 
         tablaPanel = new Table();
         tablaPanel.setBackground(new TextureRegionDrawable(new TextureRegion(texturaPaneles[0])));
@@ -203,10 +235,17 @@ public class HUD {
         stage.dispose();
         corazonLleno.dispose();
         corazonVacio.dispose();
+        if (texturePausa != null) texturePausa.dispose();
+        if (texturePausaAb != null) texturePausaAb.dispose();
         for(Texture t : texturaPaneles) t.dispose();
         for(Texture t : grisNivel1) t.dispose();
         for(Texture t : colorNivel1) t.dispose();
         for(Texture t : grisNivel2) t.dispose();
         for(Texture t : colorNivel2) t.dispose();
+
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 }
