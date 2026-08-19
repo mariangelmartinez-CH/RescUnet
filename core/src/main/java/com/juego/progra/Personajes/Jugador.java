@@ -212,6 +212,11 @@ public class Jugador extends Personaje {
     public int getVidas(){
         return vidas;
     }
+
+    public void setVidas(int vidas) {
+        this.vidas = vidas;
+    }
+
     public boolean estaVivo(){
         return vidas > 0;
     }

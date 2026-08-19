@@ -36,6 +36,7 @@ public class MapasNiveles implements Caminable {
     private Texture fondo;
     private Texture vallaInferior,vallaSuperior,vallaSuperior_Ab;
     private Texture fotosItem[][];
+    private Texture fotosLlave[];
 
     public int getFaseItem() {
         return faseItem;
@@ -155,6 +156,12 @@ public class MapasNiveles implements Caminable {
                         objTemp = new Objetos(fotosItem[color],x,y,anchItem,altItem,tipoObj,color);
                         Listaobjetos.add(objTemp);
                         break;
+                    case "llave":
+                        int colorL = Integer.parseInt(datos[3].trim());
+                        objTemp = new Objetos(fotosLlave,x,y,70,90,tipoObj,colorL);
+                        Listaobjetos.add(objTemp);
+                        break;
+
                 }
 
             }
@@ -231,18 +238,22 @@ public class MapasNiveles implements Caminable {
         boolean existeColor = false;
         for (int i = 0; i < Listaobjetos.size(); i++) {
             Objetos obj = Listaobjetos.get(i);
-            if((obj.tipo.equals("mariposa") || obj.tipo.equals("conejo") || obj.tipo.equals("flor")) && obj.colorItem == faseItem){
-                existeColor=true;
+            if((obj.tipo.equals("mariposa") || obj.tipo.equals("conejo") || obj.tipo.equals("flor") || obj.tipo.equals("llave")) && obj.colorItem == faseItem){                existeColor=true;
                 break;
             }
         }
-        if(!existeColor && faseItem == 2) {
-            nivelCompl=true;
-            System.out.println("Nivel Completado");
-        } else if(!existeColor && faseItem < 2){
-            faseItem++;
-            System.out.println("Clase de Mariposa recolectada");
+        if(!existeColor) {
+            if(faseItem<2){
+                faseItem++;
+                System.out.println("Fase "+faseItem+" recolectada");
+            }else if(faseItem==2){
+                faseItem=3;
+            } else if (faseItem==3) {
+                nivelCompl=true;
+                System.out.println("LLlave recolectada. Nivel Completado");
+            }
         }
+
     }
     private HUD hud;
 
@@ -265,7 +276,7 @@ public class MapasNiveles implements Caminable {
 
     //metodo para no repetir codigo en dibuj
     public void dibujarObjetos (SpriteBatch batch, Objetos obj){
-        if (obj.tipo.equals("mariposa") || obj.tipo.equals("conejo") || obj.tipo.equals("flor")) {
+        if (obj.tipo.equals("mariposa") || obj.tipo.equals("conejo") || obj.tipo.equals("flor") || obj.tipo.equals("llave")) {
             if (obj.colorItem == faseItem) {
 
                 float tiempoAnimacion = tiempo;
@@ -278,11 +289,11 @@ public class MapasNiveles implements Caminable {
             obj.dibujar(batch);
         }
     }
-    public void dibujar (SpriteBatch batch, Jugador jugador, List<Enemigo> enemigos, int nivel){
+    public void dibujar (SpriteBatch batch, Jugador jugador, List<Enemigo> enemigos, int nivel,float delta){
         batch.draw(fondo,0,0,1408,768);
         Texture vallaDibujar = nivelCompl ? vallaSuperior_Ab : vallaSuperior;
         batch.draw(vallaDibujar, 0, 0, 1408, 768);
-        tiempo += Gdx.graphics.getDeltaTime();
+        tiempo += delta;
         ArrayList<Dibujable> arrayDibujo = new ArrayList<>();
 
         for(Objetos obj : Listaobjetos ){
@@ -459,8 +470,15 @@ public class MapasNiveles implements Caminable {
 
         faseItem = 0;
 
+
         configurarLimites(nivel);
 
+        //Llaves
+        fotosLlave= new Texture[3];
+        for (int i = 0; i < 3; i++) {
+            fotosLlave[i]= new Texture("llave"+(i+1)+".png");
+        }
+        //Items
         fotosItem = new Texture[3][3];
         if (nivel == 1) {
             String[] colores = {"azul", "amarillo", "rosa"};
@@ -477,10 +495,10 @@ public class MapasNiveles implements Caminable {
                 }
             }
         }else if (nivel == 3) {
-            String[] conejos = {"blanca", "morada", "amarilla"};
+            String[] flores = {"blanca", "morada", "amarilla"};
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
-                    fotosItem[i][j] = new Texture(conejos[i] + (j + 1) + ".PNG");
+                    fotosItem[i][j] = new Texture(flores[i] + (j + 1) + ".PNG");
                 }
             }
         }

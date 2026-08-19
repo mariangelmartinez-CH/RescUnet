@@ -70,7 +70,11 @@ public class Objetos {
 
     //objetos Fijos
     public void dibujar(SpriteBatch batch) {
-        batch.draw(imagen, cajaObstaculo.x, cajaObstaculo.y, cajaObstaculo.width, cajaObstaculo.height);
+        if (imagen != null) {
+            batch.draw(imagen, cajaObstaculo.x, cajaObstaculo.y, cajaObstaculo.width, cajaObstaculo.height);
+        } else {
+            System.out.println("¡ERROR! Se intentó dibujar un objeto de tipo '" + tipo + "' pero su textura (imagen) es NULL.");
+        }
     }
 
     public void dibujarM(SpriteBatch batch,float tiempo) {

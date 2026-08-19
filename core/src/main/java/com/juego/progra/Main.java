@@ -24,10 +24,11 @@ public class Main extends Game {
     private Jugador jugador;
     private List<Enemigo> enemigos;
     private int nivelActual = 1;
+    private int vidasEntroNivel =5;
 
 
     private MapaPrincipal mapaPrincipal;
-    private boolean enMapaPrincipal = false;
+    private boolean enMapaPrincipal = true;
 
 
     private Transicion transicion;
@@ -43,6 +44,8 @@ public class Main extends Game {
     private static final float CONTACTO_X = 35;
     private static final float CONTACTO_Y = 45;
 
+    private float delta;
+
     public int getNivelActual() {
         return nivelActual;
     }
@@ -51,11 +54,11 @@ public class Main extends Game {
     public void create(){
         batch = new SpriteBatch();
         mapa = new MapasNiveles();
-        mapaPrincipal = new MapaPrincipal();
+        mapaPrincipal = new MapaPrincipal(this);
         transicion = new Transicion();
         menu = new Menu();
         seleccionPersonaje = new SeleccionPersonaje();
-        HUD = new HUD();
+        HUD = new HUD(this);
         mapa.setHud(HUD);
 
 
@@ -68,20 +71,24 @@ public class Main extends Game {
 
 
     private void nuevoJugador(float x, float y) {
+        int vidasTemp=(jugador != null) ? jugador.getVidas() : 5;
         if (jugador != null) {
             jugador.dispose();
         }
         jugador = new Jugador(x, y, personajeElegido);
+        jugador.setVidas(vidasTemp);
     }
 
 
-    private void irAlMapaPrincipal() {
+    public void irAlMapaPrincipal() {
         enMapaPrincipal = true;
+        enMenu=false;
         nuevoJugador(mapaPrincipal.getSpawnX(), mapaPrincipal.getSpawnY());
+        mapaPrincipal.mostrarBotonMenu(true);
     }
 
 
-    private void volverAlMapaGanando() {
+    public void volverAlMapaGanando() {
 
         if (mapaPrincipal.getNivelesGanados() < nivelActual) {
             mapaPrincipal.setNivelesGanados(nivelActual);
@@ -89,11 +96,32 @@ public class Main extends Game {
         enMapaPrincipal = true;
         nuevoJugador(mapaPrincipal.getXPiedra(nivelActual),
                      mapaPrincipal.getYPiedra(nivelActual));
+        mapaPrincipal.mostrarBotonMenu(true);
+    }
+
+    public void volverPausa(){
+        for (Enemigo e : enemigos) {
+            e.dispose();
+        }
+        enemigos.clear();
+        enMapaPrincipal=true;
+        nuevoJugador(mapaPrincipal.getXPiedra(nivelActual),
+            mapaPrincipal.getYPiedra(nivelActual));
+        Gdx.input.setInputProcessor(null);
+        mapaPrincipal.mostrarBotonMenu(true);
+
+    }
+    public void MenuPrincipal() {
+        enMapaPrincipal = false;
+        enMenu = true;
+        mapaPrincipal.mostrarBotonMenu(false);
+
     }
 
     private void cambiarNivel(int nuevoNivel) {
         enMapaPrincipal = false;
         nivelActual = nuevoNivel;
+        mapaPrincipal.mostrarBotonMenu(false);
 
         if (enemigos != null) {
             for (Enemigo e : enemigos) {
@@ -106,7 +134,7 @@ public class Main extends Game {
 
 
         nuevoJugador(mapa.getSpawnX(), mapa.getSpawnY());
-
+        vidasEntroNivel= jugador.getVidas();
         enemigos = new ArrayList<>();
         if (nivelActual == 1) {
 
@@ -126,11 +154,14 @@ public class Main extends Game {
             enemigos.add(new Enemigo(190, 420, Enemigo.Tipo.ALEATORIO, 3));
             enemigos.add(new Enemigo(730, 160, Enemigo.Tipo.VERTICAL, 3));
         }
+        com.badlogic.gdx.InputMultiplexer multiplexer = new com.badlogic.gdx.InputMultiplexer();
+        multiplexer.addProcessor(HUD.getStage());
+        Gdx.input.setInputProcessor(multiplexer);
     }
 
     @Override
     public void render(){
-
+        //Borrar al terminar
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.NUM_1)) {
             cambiarNivel(1);
             Gdx.app.log("PRUEBA", "Nivel 1");
@@ -166,7 +197,10 @@ public class Main extends Game {
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(),
                                 Gdx.graphics.getBackBufferHeight());
 
-        float delta = Gdx.graphics.getDeltaTime();
+        delta = Gdx.graphics.getDeltaTime();
+        if(HUD.juegoPausa()){
+            delta=0f;
+        }
         boolean enTransicion = transicion.estaActiva();
         if (enTransicion && transicion.actualizar(delta)) {
             int destino = transicion.getNivelDestino();
@@ -184,7 +218,7 @@ public class Main extends Game {
         }
 
 
-        if (enMapaPrincipal) {
+        if (enMapaPrincipal && delta > 0) {
             mapaPrincipal.actualizarAnimales(delta);
         }
 
@@ -217,22 +251,24 @@ public class Main extends Game {
                     }
                 }
             } else {
-                jugador.actualizar(mapa, delta);
-                for (Enemigo enemigo : enemigos) {
-                    enemigo.actualizar(mapa, delta);
-                    if (Math.abs(jugador.getX() - enemigo.getX()) < CONTACTO_X &&
-                        Math.abs(jugador.getY() - enemigo.getY()) < CONTACTO_Y) {
-                        jugador.recibirGolpe();
+                if (delta > 0) {
+                    jugador.actualizar(mapa, delta);
+                    for (Enemigo enemigo : enemigos) {
+                        enemigo.actualizar(mapa, delta);
+                        if (Math.abs(jugador.getX() - enemigo.getX()) < CONTACTO_X &&
+                            Math.abs(jugador.getY() - enemigo.getY()) < CONTACTO_Y) {
+                            jugador.recibirGolpe();
+                        }
                     }
                 }
 
                 if (mapa.saliendoPorArriba(jugador.caja(jugador.getX(), jugador.getY()))) {
                     transicion.empezarVuelta();
-                    Gdx.app.log("JUEGO", "Nivel " + nivelActual + " ganado");
                 }
             }
         }
 
+        // Dibujar la escena normalmente (el HUD y el menú se siguen dibujando para poder cerrarlo)
         if (transicion.pixelando()) {
             transicion.empezarCaptura();
             dibujarEscena();
@@ -240,6 +276,7 @@ public class Main extends Game {
         } else {
             dibujarEscena();
         }
+
     }
 
     private void dibujarEscena() {
@@ -252,6 +289,11 @@ public class Main extends Game {
             seleccionPersonaje.dibujar(batch);
             batch.end();
         } else if (enMapaPrincipal) {
+            mapaPrincipal.botonMenuPresionado();
+            if (mapaPrincipal.actualizarBotonMenu(delta)) {
+                MenuPrincipal();
+                return;
+            }
             batch.begin();
             mapaPrincipal.dibujarFondo(batch);
             mapaPrincipal.dibujarAnimales(batch);
@@ -262,14 +304,21 @@ public class Main extends Game {
                 jugador.dibujar(batch, TAMANO_EN_EL_MAPA);
             }
             mapaPrincipal.dibujarFrente(batch);
+            HUD.dibujarCorazones(batch, jugador.getVidas());
+            HUD.dibujarLlaves(batch, mapaPrincipal.getNivelesGanados());
+            mapaPrincipal.dibujarBotonMenu(batch);
             batch.end();
         } else {
             batch.begin();
-            mapa.dibujar(batch, jugador, enemigos, nivelActual);
+            mapa.dibujar(batch, jugador, enemigos, nivelActual,delta);
             HUD.dibujarCorazones(batch, jugador.getVidas());
             batch.end();
             HUD.render();
         }
+    }
+    public void reiniciarNivel(){
+        cambiarNivel(nivelActual);
+        jugador.setVidas(vidasEntroNivel);
     }
     @Override
     public void resize(int width, int height) {
@@ -293,4 +342,5 @@ public class Main extends Game {
         menu.dispose();
         seleccionPersonaje.dispose();
     }
+
 }

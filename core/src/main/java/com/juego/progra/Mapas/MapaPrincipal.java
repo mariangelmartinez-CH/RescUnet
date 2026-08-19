@@ -5,6 +5,10 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.juego.progra.Main;
+import com.juego.progra.Personajes.Jugador;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +16,8 @@ import java.util.Comparator;
 
 
 public class MapaPrincipal implements Caminable {
-
+    private HUD hud;
+    private Jugador jugador;
     private static final int ANCHO_MUNDO = 1408;
     private static final int ALTO_MUNDO = 768;
 
@@ -47,7 +52,17 @@ public class MapaPrincipal implements Caminable {
     private Texture[] hojasAnimales;
     private ArrayList<AnimalJardin> animales = new ArrayList<>();
 
-    public MapaPrincipal() {
+    //Boton
+    private Texture btnMenu;
+    private Texture btnMenuAb;
+    private Rectangle areaBotonMenu;
+    private boolean btnVisible = false;
+    private boolean botonPresionado = false;
+    private float tiempoBotonPresionado = 0f;
+    private static final float duracion = 0.20f;
+
+    public MapaPrincipal(Main juego) {
+
         fondo  = new Texture("mapaPrincipal.png");
         arco   = new Texture("mapaArco.png");
         bosque = new Texture("mapaBosque.png");
@@ -55,7 +70,6 @@ public class MapaPrincipal implements Caminable {
         medallas[0] = new Texture("medallaMariposa.png");
         medallas[1] = new Texture("medallaConejo.png");
         medallas[2] = new Texture("medallaSerpiente.png");
-
 
         marcarLaGrama();
 
@@ -68,8 +82,100 @@ public class MapaPrincipal implements Caminable {
         for (int i = 0; i < CUANTOS_ANIMALES; i++) {
             animales.add(new AnimalJardin(hojasAnimales[i % hojasAnimales.length], this));
         }
+
+        //bton
+        btnMenu= new Texture("btnMenu.png");
+        btnMenuAb= new Texture("btnMenu_Ab.png");
+        areaBotonMenu = new Rectangle(50,   600, 100, 100);
+
+
+    }
+    public void dibujarBotonMenu(SpriteBatch batch) {
+        if (!btnVisible) {
+            return;
+        }
+
+        Texture texturaActual;
+
+        if (botonPresionado) {
+            texturaActual = btnMenuAb;
+        } else {
+            texturaActual = btnMenu;
+        }
+
+        batch.draw(
+            texturaActual,
+            areaBotonMenu.x,
+            areaBotonMenu.y,
+            areaBotonMenu.width,
+            areaBotonMenu.height
+        );
+    }
+    public void mostrarBotonMenu(boolean mostrar) {
+        btnVisible = mostrar;
+    }
+    public boolean botonMenuPresionado() {
+        if (!btnVisible) {
+            return false;
+        }
+
+        if (!Gdx.input.justTouched()) {
+            return false;
+        }
+
+        float mouseX = Gdx.input.getX();
+        float mouseY = Gdx.input.getY();
+
+        float mundoX =
+            mouseX * ANCHO_MUNDO / Gdx.graphics.getWidth();
+
+        float mundoY =
+            (Gdx.graphics.getHeight() - mouseY)
+                * ALTO_MUNDO / Gdx.graphics.getHeight();
+
+        if (areaBotonMenu.contains(mundoX, mundoY)) {
+
+            botonPresionado = true;
+            tiempoBotonPresionado = 0f;
+
+            return true;
+        }
+
+        return false;
     }
 
+    public boolean mouseSobreBotonMenu() {
+
+        float mouseX = Gdx.input.getX();
+        float mouseY = Gdx.input.getY();
+
+        float mundoX =
+            mouseX * ANCHO_MUNDO / Gdx.graphics.getWidth();
+
+        float mundoY =
+            (Gdx.graphics.getHeight() - mouseY)
+                * ALTO_MUNDO / Gdx.graphics.getHeight();
+
+        return areaBotonMenu.contains(mundoX, mundoY);
+    }
+    public boolean actualizarBotonMenu(float delta) {
+
+        if (!botonPresionado) {
+            return false;
+        }
+
+        tiempoBotonPresionado += delta;
+
+        if (tiempoBotonPresionado >= duracion) {
+
+            botonPresionado = false;
+            tiempoBotonPresionado = 0f;
+
+            return true;
+        }
+
+        return false;
+    }
     public void actualizarAnimales(float delta) {
         for (int i = 0; i < animales.size(); i++) {
             animales.get(i).actualizar(this, delta);
@@ -303,5 +409,6 @@ public class MapaPrincipal implements Caminable {
                 if (t != null) t.dispose();
             }
         }
+
     }
 }

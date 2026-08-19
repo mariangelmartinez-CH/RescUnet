@@ -14,9 +14,11 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.juego.progra.Main;
 
 public class HUD {
     private MenuConf menu;
+    private Main juegoP;
     // Corazones
     private Texture corazonLleno;
     private Texture corazonVacio;
@@ -43,9 +45,16 @@ public class HUD {
     private final int[] posY_F = {45, 45, 45};
     private final int[] size_F = {56, 56, 56};
 
-
+    //Items
     private Texture[] ItemsGris = new Texture[3];
     private Texture[] ItemsColor = new Texture[3];
+
+    //Llave
+    private Texture llaveGris;
+    private Texture llaveColor;
+    private Image imgLLave;
+    private int recogidasLlave=0;
+    private Texture tablaLlaves;
 
     // Panel
     private Stage stage;
@@ -54,11 +63,11 @@ public class HUD {
     private Group grupoItems;
     private Texture[] texturaPaneles;
 
-    public HUD() {
+    public HUD(Main juegoP) {
+        this.juegoP=juegoP;
         corazonLleno = new Texture("CorazonLleno.png");
         corazonVacio = new Texture("CorazonVacio.png");
         stage = new Stage(new FitViewport(1550, 780));
-        menu = new MenuConf(stage);
 
         texturaPaneles = new Texture[]{
             new Texture("panelPrimero.png"),
@@ -78,7 +87,8 @@ public class HUD {
         btnPausa.setPosition(20, 630);
         btnPausa.setSize(150, 150);
 
-        btnPausa.addListener(new ClickListener() {
+        btnPausa.addListener(
+            new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 menu.cambiarVisibilidad();
@@ -95,6 +105,11 @@ public class HUD {
         grupoItems = new Group();
         grupoItems.setPosition(475, 2);
         stage.addActor(grupoItems);
+
+        //LLave
+        llaveGris= new Texture("llaveGris.png");
+        llaveColor= new Texture("llave1.png");
+        tablaLlaves= new Texture("tablaLlaves.png");
 
         //Mariposas
         grisNivel1 = new Texture[]{
@@ -145,6 +160,13 @@ public class HUD {
             items[i].setBounds(posX_M[i], posY_M[i], size_M[i], size_M[i]);
             grupoItems.addActor(items[i]);
         }
+
+        //LLave de los niveles
+        imgLLave= new Image(llaveGris);
+        imgLLave.setBounds(1375, 25, 80, 110);
+        stage.addActor(imgLLave);
+
+        menu = new MenuConf(stage,juegoP,this);
     }
 
     // Para dibujar los corazones
@@ -173,6 +195,11 @@ public class HUD {
                 if (indice + 1 < texturaPaneles.length) {
                     tablaPanel.setBackground(new TextureRegionDrawable(new TextureRegion(texturaPaneles[indice + 1])));
                 }
+            }
+        } else if (indice == 3) {
+            recogidasLlave++;
+            if (recogidasLlave == 1) {
+                imgLLave.setDrawable(new TextureRegionDrawable(llaveColor));
             }
         }
     }
@@ -224,6 +251,32 @@ public class HUD {
             items[i].setDrawable(new TextureRegionDrawable(ItemsGris[i]));
             items[i].setBounds(posXActual[i], posYActual[i], sizeActual[i], sizeActual[i]);
         }
+
+        //LLave
+        imgLLave.setDrawable(new TextureRegionDrawable(llaveGris));
+       imgLLave.setBounds(1375, 25, 80, 110);
+    }
+    public void resetearHUD() {
+        recogidas = new int[]{0, 0, 0};
+        tablaPanel.setBackground(new TextureRegionDrawable(new TextureRegion(texturaPaneles[0])));
+        for (int i = 0; i < 3; i++) {
+            items[i].setDrawable(new TextureRegionDrawable(ItemsGris[i]));
+        }
+        imgLLave.setDrawable(new TextureRegionDrawable(llaveGris));
+        imgLLave.setBounds(1375, 25, 80, 110);
+    }
+
+    public void dibujarLlaves(SpriteBatch batch,int nivelesGanados){
+        batch.draw(tablaLlaves, 150, 600, 500, 150);
+        int separacion=121;
+        for (int i = 0; i < 3; i++) {
+            if(i==2){
+                separacion=123;
+            }
+            Texture llaveActual= (i<nivelesGanados) ? llaveColor :llaveGris;
+            batch.draw(llaveActual,250 +(i*separacion),640,50,70);
+
+        }
     }
 
     public void render(){
@@ -237,15 +290,25 @@ public class HUD {
         corazonVacio.dispose();
         if (texturePausa != null) texturePausa.dispose();
         if (texturePausaAb != null) texturePausaAb.dispose();
+
+        // Disponer texturas de la llave
+        if (llaveGris != null) llaveGris.dispose();
+        if (llaveColor != null) llaveColor.dispose();
+
         for(Texture t : texturaPaneles) t.dispose();
         for(Texture t : grisNivel1) t.dispose();
         for(Texture t : colorNivel1) t.dispose();
         for(Texture t : grisNivel2) t.dispose();
         for(Texture t : colorNivel2) t.dispose();
+        for(Texture t : grisNivel3) t.dispose();
+        for(Texture t : colorNivel3) t.dispose();
 
     }
 
     public Stage getStage() {
         return stage;
+    }
+    public boolean juegoPausa(){
+        return menu.confVisible();
     }
 }

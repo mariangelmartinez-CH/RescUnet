@@ -119,3 +119,5 @@ mariposa, 390,425,2
 mariposa, 1168,438,2
 mariposa, 1168,190,2
 mariposa, 920,205,2
+
+llave, 650,500,3
