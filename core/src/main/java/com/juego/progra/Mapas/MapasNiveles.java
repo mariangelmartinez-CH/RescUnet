@@ -45,16 +45,10 @@ public class MapasNiveles implements Caminable {
 
 
     private float LIMITE_IZQ, LIMITE_DER, LIMITE_ABAJO, LIMITE_ARRIBA;
-
-
     private ArrayList<Rectangle> zonasBloqueadas = new ArrayList<>();
-
-
     private ArrayList<Rectangle> zonasPermitidas = new ArrayList<>();
 
-
     private Rectangle salidaArriba;
-
 
     private float spawnX, spawnY;
 

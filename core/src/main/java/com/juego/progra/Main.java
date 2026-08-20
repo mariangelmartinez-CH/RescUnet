@@ -76,11 +76,11 @@ public class Main extends Game {
         mapa.setHud(HUD);
 
         musicaAmbiente = new PistaMusical(
-                Gdx.audio.newMusic(Gdx.files.internal("music_general.ogg")), VOLUMEN_MUSICA);
+            Gdx.audio.newMusic(Gdx.files.internal("music_general.ogg")), VOLUMEN_MUSICA);
         musicasNiveles = new PistaMusical[]{
-                new PistaMusical(Gdx.audio.newMusic(Gdx.files.internal("primer_level.ogg")), VOLUMEN_MUSICA),
-                new PistaMusical(Gdx.audio.newMusic(Gdx.files.internal("segundo_level.ogg")), VOLUMEN_MUSICA),
-                new PistaMusical(Gdx.audio.newMusic(Gdx.files.internal("ultimo_level.ogg")), VOLUMEN_MUSICA)
+            new PistaMusical(Gdx.audio.newMusic(Gdx.files.internal("primer_level.ogg")), VOLUMEN_MUSICA),
+            new PistaMusical(Gdx.audio.newMusic(Gdx.files.internal("segundo_level.ogg")), VOLUMEN_MUSICA),
+            new PistaMusical(Gdx.audio.newMusic(Gdx.files.internal("ultimo_level.ogg")), VOLUMEN_MUSICA)
         };
 
         com.badlogic.gdx.InputMultiplexer multiplexer = new com.badlogic.gdx.InputMultiplexer();
@@ -131,7 +131,7 @@ public class Main extends Game {
         enMapaPrincipal = true;
         musicaAmbiente.fundidoEntrada();
         nuevoJugador(mapaPrincipal.getXPiedra(nivelActual),
-                     mapaPrincipal.getYPiedra(nivelActual));
+            mapaPrincipal.getYPiedra(nivelActual));
         mapaPrincipal.mostrarBotonMenu(true);
     }
 
@@ -250,7 +250,7 @@ public class Main extends Game {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(),
-                                Gdx.graphics.getBackBufferHeight());
+            Gdx.graphics.getBackBufferHeight());
 
         delta = Gdx.graphics.getDeltaTime();
         if(HUD.juegoPausa()){
@@ -310,7 +310,7 @@ public class Main extends Game {
 
                 if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
                     int nivel = mapaPrincipal.nivelDisponible(
-                            jugador.caja(jugador.getX(), jugador.getY()));
+                        jugador.caja(jugador.getX(), jugador.getY()));
                     if (nivel > 0) {
                         musicaAmbiente.fundidoSalida();
                         transicion.empezar(nivel);
@@ -319,7 +319,7 @@ public class Main extends Game {
                 }
 
                 boolean tocandoCasaAhora = mapaPrincipal.tocandoCasa(
-                        jugador.caja(jugador.getX(), jugador.getY()));
+                    jugador.caja(jugador.getX(), jugador.getY()));
                 if (tocandoCasaAhora && !enCasa) {
                     Gdx.app.log("CASA", "El jugador llego a la casa");
                 }
