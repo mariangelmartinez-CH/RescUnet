@@ -1,6 +1,7 @@
 package com.juego.progra;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -29,8 +30,8 @@ public class SeleccionPersonaje {
     };
 
     private final Rectangle[] dibujos = {
-        new Rectangle(259, 167, 376, 364),  //PERSONAJE1
-        new Rectangle(771, 174, 361, 350)   //PERSONAJE2
+        new Rectangle(259, 167, 376, 364),
+        new Rectangle(771, 174, 361, 350)
     };
 
     private final Opcion[] opciones = { Opcion.PERSONAJE1, Opcion.PERSONAJE2 };
@@ -40,9 +41,9 @@ public class SeleccionPersonaje {
 
 
     private static final float[][] CARRILES = {
-        { 150,  238},   //a la izquierda del marco de la niña
-        { 648,  716},   //en el pasillo del centro, entre los dos marcos
-        {1130, 1218}    //a la derecha del marco del niño
+        { 150,  238},
+        { 648,  716},
+        {1130, 1218}
     };
 
 
@@ -51,12 +52,22 @@ public class SeleccionPersonaje {
     private Texture[] hojasMariposas;
     private ArrayList<MariposaMenu> mariposas = new ArrayList<>();
 
+    private Sound sonidoBoton;
+
+    private boolean clicEsteFrame = false;
+
+    public boolean huboClic() {
+        return clicEsteFrame;
+    }
+
     public SeleccionPersonaje() {
         fondo = new Texture("pantalla_seleccion.png");
         personajes = new Texture[]{
-            new Texture("pantallaseleccion1.png"),  //niña, cuerpo completo
-            new Texture("pantallaseleccion4.png")   //niño,  cuerpo completo
+            new Texture("pantallaseleccion1.png"),
+            new Texture("pantallaseleccion4.png")
         };
+
+        sonidoBoton = Gdx.audio.newSound(Gdx.files.internal("boton.ogg"));
 
 
         hojasMariposas = new Texture[]{
@@ -75,6 +86,8 @@ public class SeleccionPersonaje {
     }
 
     public Opcion actualizar() {
+        clicEsteFrame = false;
+
         float ratonX = Gdx.input.getX() * (float) ANCHO_MUNDO / Gdx.graphics.getWidth();
         float ratonY = ALTO_MUNDO
                      - (Gdx.input.getY() * (float) ALTO_MUNDO / Gdx.graphics.getHeight());
@@ -93,6 +106,8 @@ public class SeleccionPersonaje {
         }
 
         if (senalado >= 0 && Gdx.input.justTouched()) {
+            sonidoBoton.play();
+            clicEsteFrame = true;
             return opciones[senalado];
         }
         return Opcion.NINGUNA;
@@ -136,5 +151,6 @@ public class SeleccionPersonaje {
                 if (t != null) t.dispose();
             }
         }
+        if (sonidoBoton != null) sonidoBoton.dispose();
     }
 }

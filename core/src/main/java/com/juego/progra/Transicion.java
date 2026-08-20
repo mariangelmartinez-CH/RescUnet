@@ -23,13 +23,13 @@ public class Transicion {
     private static final float PASO_MAXIMO = 1f / 30f;
     private static final float FRAC_ALTO_JUGADOR = 92f / 105f;  //lo que mide el muñeco de lado
     private static final float FRAC_PIES_JUGADOR = 11.5f / 105f;//a que altura tiene los pies
-    private static final float FRAC_ALTO_PUNO_NINO = 0.8196f;    //410 de 500 px
-    private static final float FRAC_PIES_PUNO_NINO = 0.1120f;    //margen transparente de abajo
-    private static final float FRAC_CENTROX_PUNO_NINO = 0.48f;   //el dibujo no esta centrado del todo
+    private static final float FRAC_ALTO_PUNO_NINO = 0.8196f;
+    private static final float FRAC_PIES_PUNO_NINO = 0.1120f;
+    private static final float FRAC_CENTROX_PUNO_NINO = 0.48f;
 
-    private static final float FRAC_ALTO_PUNO_NINA = 0.76f;      //380 de 500 px
-    private static final float FRAC_PIES_PUNO_NINA = 0.132f;     //margen transparente de abajo
-    private static final float FRAC_CENTROX_PUNO_NINA = 0.508f;  //el dibujo no esta centrado del todo
+    private static final float FRAC_ALTO_PUNO_NINA = 0.76f;
+    private static final float FRAC_PIES_PUNO_NINA = 0.132f;
+    private static final float FRAC_CENTROX_PUNO_NINA = 0.508f;
 
     private Fase fase = Fase.NADA;
     private float tiempo = 0;

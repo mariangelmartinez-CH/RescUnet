@@ -1,6 +1,7 @@
 package com.juego.progra.Mapas;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.juego.progra.Personajes.Enemigo;
@@ -84,9 +85,12 @@ public class MapasNiveles implements Caminable {
     private Texture arbustoDanado;
     private float anchoArbustoNivel = 70, altoArbustoNivel = 70;
 
+    private Sound sonidoRomper;
+
     //Constructor
     public MapasNiveles() {
         Listaobjetos = new ArrayList<>();
+        sonidoRomper = Gdx.audio.newSound(Gdx.files.internal("romper_arbusto.wav"));
     }
 
     public void cargarArchivo (String archivo,int nivel){
@@ -381,6 +385,7 @@ public class MapasNiveles implements Caminable {
         Objetos arbusto = obtenerArbustoEnDireccion(centroX, centroY, dx, dy);
         if (arbusto == null) return;
 
+        sonidoRomper.play();
         arbusto.tiempoDañado += TIEMPO_PARA_ROMPER / 2f;
         actualizarDanoArbusto(arbusto);
         if (arbusto.tiempoDañado >= TIEMPO_PARA_ROMPER) {
@@ -522,5 +527,6 @@ public class MapasNiveles implements Caminable {
                 }
             }
         }
+        if(sonidoRomper != null) sonidoRomper.dispose();
     }
 }

@@ -29,6 +29,7 @@ public class Main extends Game {
 
     private MapaPrincipal mapaPrincipal;
     private boolean enMapaPrincipal = true;
+    private boolean enCasa = false;
 
 
     private Transicion transicion;
@@ -40,6 +41,19 @@ public class Main extends Game {
     private boolean enSeleccion = false;
     private int personajeElegido = 2;
     private static final float TAMANO_EN_EL_MAPA = 125;
+
+    private static final float VOLUMEN_MUSICA = 0.6f;
+    private PistaMusical musicaAmbiente;
+    private PistaMusical[] musicasNiveles;
+    private boolean musicaSilenciada = false;
+
+    public void alternarSilencioMusica() {
+        musicaSilenciada = !musicaSilenciada;
+        musicaAmbiente.setSilenciada(musicaSilenciada);
+        for (PistaMusical p : musicasNiveles) {
+            p.setSilenciada(musicaSilenciada);
+        }
+    }
 
     private static final float CONTACTO_X = 35;
     private static final float CONTACTO_Y = 45;
@@ -61,12 +75,21 @@ public class Main extends Game {
         HUD = new HUD(this);
         mapa.setHud(HUD);
 
+        musicaAmbiente = new PistaMusical(
+                Gdx.audio.newMusic(Gdx.files.internal("music_general.ogg")), VOLUMEN_MUSICA);
+        musicasNiveles = new PistaMusical[]{
+                new PistaMusical(Gdx.audio.newMusic(Gdx.files.internal("primer_level.ogg")), VOLUMEN_MUSICA),
+                new PistaMusical(Gdx.audio.newMusic(Gdx.files.internal("segundo_level.ogg")), VOLUMEN_MUSICA),
+                new PistaMusical(Gdx.audio.newMusic(Gdx.files.internal("ultimo_level.ogg")), VOLUMEN_MUSICA)
+        };
 
         com.badlogic.gdx.InputMultiplexer multiplexer = new com.badlogic.gdx.InputMultiplexer();
         multiplexer.addProcessor(HUD.getStage());
         Gdx.input.setInputProcessor(multiplexer);
 
         cambiarNivel(1);
+        musicasNiveles[0].detener();
+        musicaAmbiente.empezar();
     }
 
 
@@ -83,10 +106,22 @@ public class Main extends Game {
     public void irAlMapaPrincipal() {
         enMapaPrincipal = true;
         enMenu=false;
+        for (PistaMusical p : musicasNiveles) {
+            p.detener();
+        }
+        if (!musicaAmbiente.estaSonando()) {
+            musicaAmbiente.empezar();
+        }
         nuevoJugador(mapaPrincipal.getSpawnX(), mapaPrincipal.getSpawnY());
         mapaPrincipal.mostrarBotonMenu(true);
     }
 
+    private void actualizarMusicas(float delta) {
+        musicaAmbiente.actualizar(delta);
+        for (PistaMusical p : musicasNiveles) {
+            p.actualizar(delta);
+        }
+    }
 
     public void volverAlMapaGanando() {
 
@@ -94,6 +129,7 @@ public class Main extends Game {
             mapaPrincipal.setNivelesGanados(nivelActual);
         }
         enMapaPrincipal = true;
+        musicaAmbiente.fundidoEntrada();
         nuevoJugador(mapaPrincipal.getXPiedra(nivelActual),
                      mapaPrincipal.getYPiedra(nivelActual));
         mapaPrincipal.mostrarBotonMenu(true);
@@ -105,6 +141,8 @@ public class Main extends Game {
         }
         enemigos.clear();
         enMapaPrincipal=true;
+        musicasNiveles[nivelActual - 1].detener();
+        musicaAmbiente.fundidoEntrada();
         nuevoJugador(mapaPrincipal.getXPiedra(nivelActual),
             mapaPrincipal.getYPiedra(nivelActual));
         Gdx.input.setInputProcessor(null);
@@ -118,10 +156,27 @@ public class Main extends Game {
 
     }
 
+    public void empezarReinicioNivel() {
+        transicion.empezarPantalla(-3);
+    }
+
+    public void empezarVueltaPausa() {
+        transicion.empezarPantalla(-4);
+    }
+
+    public void empezarVueltaMenu() {
+        transicion.empezarPantalla(-5);
+    }
+
     private void cambiarNivel(int nuevoNivel) {
         enMapaPrincipal = false;
         nivelActual = nuevoNivel;
         mapaPrincipal.mostrarBotonMenu(false);
+        musicaAmbiente.detener();
+        for (PistaMusical p : musicasNiveles) {
+            p.detener();
+        }
+        musicasNiveles[nuevoNivel - 1].fundidoEntrada();
 
         if (enemigos != null) {
             for (Enemigo e : enemigos) {
@@ -143,13 +198,13 @@ public class Main extends Game {
             enemigos.add(new Enemigo(1020, 180, Enemigo.Tipo.ALEATORIO));
 
         } else if (nivelActual == 2) {
-            enemigos.add(new Enemigo(345, 590, Enemigo.Tipo.HORIZONTAL, 2));  // arriba izq, 594px de pasillo
-            enemigos.add(new Enemigo(1000, 470, Enemigo.Tipo.HORIZONTAL, 2)); // arriba der, 241px por encima de los arbustos
-            enemigos.add(new Enemigo(300, 175, Enemigo.Tipo.ALEATORIO, 2));   // abajo izq, 231x137
-            enemigos.add(new Enemigo(1150, 250, Enemigo.Tipo.ALEATORIO, 2));  // abajo der, 56x389 (el pasillo pegado a la reja)
+            enemigos.add(new Enemigo(345, 590, Enemigo.Tipo.HORIZONTAL, 2));
+            enemigos.add(new Enemigo(1000, 470, Enemigo.Tipo.HORIZONTAL, 2));
+            enemigos.add(new Enemigo(300, 175, Enemigo.Tipo.ALEATORIO, 2));
+            enemigos.add(new Enemigo(1150, 250, Enemigo.Tipo.ALEATORIO, 2));
         } else if (nivelActual == 3) {
 
-            enemigos.add(new Enemigo(480, 300, Enemigo.Tipo.ALEATORIO, 3)); // centro, suelta por el nivel
+            enemigos.add(new Enemigo(480, 300, Enemigo.Tipo.ALEATORIO, 3));
 
             enemigos.add(new Enemigo(190, 420, Enemigo.Tipo.ALEATORIO, 3));
             enemigos.add(new Enemigo(730, 160, Enemigo.Tipo.VERTICAL, 3));
@@ -214,17 +269,27 @@ public class Main extends Game {
             } else if (destino == -2) {
                 enSeleccion = false;
                 irAlMapaPrincipal();
+            } else if (destino == -3) {
+                reiniciarNivel();
+            } else if (destino == -4) {
+                volverPausa();
+            } else if (destino == -5) {
+                MenuPrincipal();
             }
         }
 
 
         if (enMapaPrincipal && delta > 0) {
             mapaPrincipal.actualizarAnimales(delta);
+            mapaPrincipal.actualizarFlecha(delta);
         }
+
+        actualizarMusicas(delta);
 
         if (!enTransicion) {
             if (enMenu) {
                 Menu.Opcion elegida = menu.actualizar();
+                if (menu.huboClic()) musicaAmbiente.agachar();
                 if (elegida == Menu.Opcion.JUGAR) {
                     transicion.empezarPantalla(-1);
                 } else if (elegida == Menu.Opcion.SALIR) {
@@ -233,6 +298,7 @@ public class Main extends Game {
 
             } else if (enSeleccion) {
                 SeleccionPersonaje.Opcion elegido = seleccionPersonaje.actualizar();
+                if (seleccionPersonaje.huboClic()) musicaAmbiente.agachar();
                 if (elegido != SeleccionPersonaje.Opcion.NINGUNA) {
                     personajeElegido = (elegido == SeleccionPersonaje.Opcion.PERSONAJE1) ? 1 : 2;
                     Gdx.app.log("SELECCION", "Personaje elegido: " + elegido);
@@ -246,10 +312,18 @@ public class Main extends Game {
                     int nivel = mapaPrincipal.nivelDisponible(
                             jugador.caja(jugador.getX(), jugador.getY()));
                     if (nivel > 0) {
+                        musicaAmbiente.fundidoSalida();
                         transicion.empezar(nivel);
                         Gdx.app.log("MAPA", "Entrando al nivel " + nivel);
                     }
                 }
+
+                boolean tocandoCasaAhora = mapaPrincipal.tocandoCasa(
+                        jugador.caja(jugador.getX(), jugador.getY()));
+                if (tocandoCasaAhora && !enCasa) {
+                    Gdx.app.log("CASA", "El jugador llego a la casa");
+                }
+                enCasa = tocandoCasaAhora;
             } else {
                 if (delta > 0) {
                     jugador.actualizar(mapa, delta);
@@ -263,6 +337,7 @@ public class Main extends Game {
                 }
 
                 if (mapa.saliendoPorArriba(jugador.caja(jugador.getX(), jugador.getY()))) {
+                    musicasNiveles[nivelActual - 1].fundidoSalida();
                     transicion.empezarVuelta();
                 }
             }
@@ -291,7 +366,7 @@ public class Main extends Game {
         } else if (enMapaPrincipal) {
             mapaPrincipal.botonMenuPresionado();
             if (mapaPrincipal.actualizarBotonMenu(delta)) {
-                MenuPrincipal();
+                empezarVueltaMenu();
                 return;
             }
             batch.begin();
@@ -341,6 +416,12 @@ public class Main extends Game {
         transicion.dispose();
         menu.dispose();
         seleccionPersonaje.dispose();
+        if (musicaAmbiente != null) musicaAmbiente.dispose();
+        if (musicasNiveles != null) {
+            for (PistaMusical p : musicasNiveles) {
+                if (p != null) p.dispose();
+            }
+        }
     }
 
 }

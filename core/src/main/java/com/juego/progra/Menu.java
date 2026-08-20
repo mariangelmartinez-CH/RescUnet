@@ -2,6 +2,7 @@ package com.juego.progra;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -58,6 +59,14 @@ public class Menu {
 
     private Texture pixel;
 
+    private Sound sonidoBoton;
+
+    private boolean clicEsteFrame = false;
+
+    public boolean huboClic() {
+        return clicEsteFrame;
+    }
+
     public Menu() {
         fondo = new Texture("MenuPrincipalsinBotones.png");
         botones = new Texture[]{
@@ -65,6 +74,8 @@ public class Menu {
             new Texture("botonprinc2.png"),   //SALIR
             new Texture("botonprinc3.png")    //CREDITOS
         };
+
+        sonidoBoton = Gdx.audio.newSound(Gdx.files.internal("boton.ogg"));
 
         creditos = new Texture("creditos_.png");
 
@@ -116,6 +127,8 @@ public class Menu {
 
 
     public Opcion actualizar() {
+        clicEsteFrame = false;
+
         float ratonX = Gdx.input.getX() * (float) ANCHO_MUNDO / Gdx.graphics.getWidth();
         float ratonY = ALTO_MUNDO
                      - (Gdx.input.getY() * (float) ALTO_MUNDO / Gdx.graphics.getHeight());
@@ -142,6 +155,8 @@ public class Menu {
         }
 
         if (senalado >= 0 && Gdx.input.justTouched()) {
+            sonidoBoton.play();
+            clicEsteFrame = true;
             if (opciones[senalado] == Opcion.CREDITOS) {
                 mostrandoCreditos = true;
                 return Opcion.NINGUNA;
@@ -202,5 +217,6 @@ public class Menu {
         }
         if (creditos != null) creditos.dispose();
         if (pixel != null) pixel.dispose();
+        if (sonidoBoton != null) sonidoBoton.dispose();
     }
 }

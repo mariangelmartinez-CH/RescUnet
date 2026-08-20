@@ -1,5 +1,7 @@
 package com.juego.progra.Mapas;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -27,6 +29,7 @@ public class HUD {
     private ImageButton btnPausa;
     private Texture texturePausa;
     private Texture texturePausaAb;
+    private Sound sonidoBoton;
 
     //Texturas de los Objetos por nivel
     private Texture[] grisNivel1, colorNivel1;
@@ -78,6 +81,7 @@ public class HUD {
         // Botones
         texturePausa = new Texture("btnPausa.png");
         texturePausaAb = new Texture("btnPausaAb.png");
+        sonidoBoton = Gdx.audio.newSound(Gdx.files.internal("boton.ogg"));
 
         ImageButton.ImageButtonStyle estiloBtn = new ImageButton.ImageButtonStyle();
         estiloBtn.imageUp = new TextureRegionDrawable(new TextureRegion(texturePausa));
@@ -91,6 +95,7 @@ public class HUD {
             new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                sonidoBoton.play();
                 menu.cambiarVisibilidad();
             }
         });
@@ -166,7 +171,7 @@ public class HUD {
         imgLLave.setBounds(1375, 25, 80, 110);
         stage.addActor(imgLLave);
 
-        menu = new MenuConf(stage,juegoP,this);
+        menu = new MenuConf(stage,juegoP,this,sonidoBoton);
     }
 
     // Para dibujar los corazones
@@ -290,6 +295,7 @@ public class HUD {
         corazonVacio.dispose();
         if (texturePausa != null) texturePausa.dispose();
         if (texturePausaAb != null) texturePausaAb.dispose();
+        if (sonidoBoton != null) sonidoBoton.dispose();
 
         // Disponer texturas de la llave
         if (llaveGris != null) llaveGris.dispose();

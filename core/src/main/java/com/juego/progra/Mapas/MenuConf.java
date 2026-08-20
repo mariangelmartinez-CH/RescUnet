@@ -1,5 +1,6 @@
 package com.juego.progra.Mapas;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -20,13 +21,15 @@ public class MenuConf {
     private Main juegoP;
     private HUD HudRef;
     private Image fondo;
+    private Sound sonidoBoton;
 
 
-    public MenuConf(Stage stage,Main juegoP, HUD HudRef) {
+    public MenuConf(Stage stage,Main juegoP, HUD HudRef, Sound sonidoBoton) {
         this.stage = stage;
         grupo = new Group();
         this.juegoP = juegoP;
         this.HudRef=HudRef;
+        this.sonidoBoton = sonidoBoton;
 
         float anchoMenu = 700;
         float altoMenu = 650;
@@ -49,7 +52,8 @@ public class MenuConf {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                juegoP.reiniciarNivel();
+                sonidoBoton.play();
+                juegoP.empezarReinicioNivel();
                 HudRef.resetearHUD();
                 grupo.setVisible(false);
             }
@@ -77,17 +81,17 @@ public class MenuConf {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
+                sonidoBoton.play();
 
                 estadoVolumen[0] = (estadoVolumen[0] == 0) ? 1 : 0;
+                juegoP.alternarSilencioMusica();
 
                 if (estadoVolumen[0] == 1) {
                     estiloVol.imageUp = new TextureRegionDrawable(new TextureRegion(texturaSilencioUp));
                     estiloVol.imageDown = new TextureRegionDrawable(new TextureRegion(texturaSilencioDown));
-                    //Codigo de silenciar musica
                 } else {
                     estiloVol.imageUp = new TextureRegionDrawable(new TextureRegion(texturaVolUp));
                     estiloVol.imageDown = new TextureRegionDrawable(new TextureRegion(texturaVolDown));
-                    //codigo de poner musica
                 }
             }
         });
@@ -101,7 +105,8 @@ public class MenuConf {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                juegoP.volverPausa();
+                sonidoBoton.play();
+                juegoP.empezarVueltaPausa();
                 grupo.setVisible(false);
             }
         });
@@ -115,6 +120,7 @@ public class MenuConf {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
+                sonidoBoton.play();
                 grupo.setVisible(false);
             }
         });

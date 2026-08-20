@@ -1,6 +1,7 @@
 package com.juego.progra.Mapas;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -39,6 +40,17 @@ public class MapaPrincipal implements Caminable {
         {972, 229, 82}    //serpiente
     };
 
+    private static final float[] CASA = {1390, 190, 170, 80};
+
+    private static final float[][] FLECHAS_IMG = {
+        {1150, 238},
+        {1300, 238}
+    };
+
+    private static final float FLECHA_ANCHO = 70f;
+    private static final float FLECHA_ALTO = 70f * 1024f / 1536f;
+    private static final float DURACION_FLECHA = 0.5f;
+
     private Texture fondo;
     private Texture arco;
     private Texture bosque;
@@ -60,6 +72,12 @@ public class MapaPrincipal implements Caminable {
     private boolean botonPresionado = false;
     private float tiempoBotonPresionado = 0f;
     private static final float duracion = 0.20f;
+    private Sound sonidoBoton;
+
+    private Texture flecha;
+    private boolean mostrarFlecha = true;
+    private float tiempoFlecha = 0f;
+    private float[][] flechasMundo;
 
     public MapaPrincipal(Main juego) {
 
@@ -87,7 +105,16 @@ public class MapaPrincipal implements Caminable {
         btnMenu= new Texture("btnMenu.png");
         btnMenuAb= new Texture("btnMenu_Ab.png");
         areaBotonMenu = new Rectangle(50,   600, 100, 100);
+        sonidoBoton = Gdx.audio.newSound(Gdx.files.internal("boton.ogg"));
 
+        flecha = new Texture("flecha.png");
+        flechasMundo = new float[FLECHAS_IMG.length][2];
+        for (int i = 0; i < FLECHAS_IMG.length; i++) {
+            float imgX = FLECHAS_IMG[i][0];
+            float imgY = FLECHAS_IMG[i][1];
+            flechasMundo[i][0] = imgX * ANCHO_MUNDO / ANCHO_IMAGEN - FLECHA_ANCHO / 2f;
+            flechasMundo[i][1] = ALTO_MUNDO - imgY * ALTO_MUNDO / ALTO_IMAGEN - FLECHA_ALTO / 2f;
+        }
 
     }
     public void dibujarBotonMenu(SpriteBatch batch) {
@@ -135,6 +162,7 @@ public class MapaPrincipal implements Caminable {
 
         if (areaBotonMenu.contains(mundoX, mundoY)) {
 
+            sonidoBoton.play();
             botonPresionado = true;
             tiempoBotonPresionado = 0f;
 
@@ -364,6 +392,33 @@ public class MapaPrincipal implements Caminable {
         for (int i = 0; i < nivelesGanados && i < 3; i++) {
             batch.draw(medallas[i], 0, 0, ANCHO_MUNDO, ALTO_MUNDO);
         }
+
+        if (nivelesGanados >= 3 && mostrarFlecha) {
+            for (float[] pos : flechasMundo) {
+                batch.draw(flecha, pos[0], pos[1], FLECHA_ANCHO, FLECHA_ALTO);
+            }
+        }
+    }
+
+    public void actualizarFlecha(float delta) {
+        tiempoFlecha += delta;
+        if (tiempoFlecha >= DURACION_FLECHA) {
+            tiempoFlecha -= DURACION_FLECHA;
+            mostrarFlecha = !mostrarFlecha;
+        }
+    }
+
+    public boolean tocandoCasa(Rectangle r) {
+        if (nivelesGanados < 3) return false;
+
+        float pieX = r.x + r.width / 2f;
+        float pieY = r.y + r.height / 2f - DESFASE_PIES;
+
+        float px = pieX * ANCHO_IMAGEN / ANCHO_MUNDO;
+        float py = (ALTO_MUNDO - pieY) * ALTO_IMAGEN / ALTO_MUNDO;
+
+        return px >= CASA[0] && px <= CASA[0] + CASA[2]
+            && py >= CASA[1] && py <= CASA[1] + CASA[3];
     }
 
     //todo lo que va DELANTE del jugador el arco, para que pase por debajo
@@ -409,6 +464,8 @@ public class MapaPrincipal implements Caminable {
                 if (t != null) t.dispose();
             }
         }
+        if (sonidoBoton != null) sonidoBoton.dispose();
+        if (flecha != null) flecha.dispose();
 
     }
 }

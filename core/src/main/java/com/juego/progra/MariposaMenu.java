@@ -24,7 +24,7 @@ public class MariposaMenu {
 
     private final float minX, maxX;
     private float x, y;
-    private int direccion; // 1 = va hacia la derecha, -1 = hacia la izquierda
+    private int direccion;
     private final float velocidad;
     private float tiempoAnimacion;
 
