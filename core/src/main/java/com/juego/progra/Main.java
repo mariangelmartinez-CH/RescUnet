@@ -39,6 +39,8 @@ public class Main extends Game {
     private boolean enMenu = true;
     private SeleccionPersonaje seleccionPersonaje;
     private boolean enSeleccion = false;
+    private informacion historia;
+    private boolean enHistoria = false;
     private int personajeElegido = 2;
     private static final float TAMANO_EN_EL_MAPA = 125;
 
@@ -72,6 +74,7 @@ public class Main extends Game {
         transicion = new Transicion();
         menu = new Menu();
         seleccionPersonaje = new SeleccionPersonaje();
+        historia = new informacion(this);
         HUD = new HUD(this);
         mapa.setHud(HUD);
 
@@ -85,6 +88,7 @@ public class Main extends Game {
 
         com.badlogic.gdx.InputMultiplexer multiplexer = new com.badlogic.gdx.InputMultiplexer();
         multiplexer.addProcessor(HUD.getStage());
+        multiplexer.addProcessor(historia.getStage());
         Gdx.input.setInputProcessor(multiplexer);
 
         cambiarNivel(1);
@@ -168,6 +172,10 @@ public class Main extends Game {
         transicion.empezarPantalla(-5);
     }
 
+    public void empezarSalidaHistoria() {
+        transicion.empezarPantalla(-6);
+    }
+
     private void cambiarNivel(int nuevoNivel) {
         enMapaPrincipal = false;
         nivelActual = nuevoNivel;
@@ -211,6 +219,7 @@ public class Main extends Game {
         }
         com.badlogic.gdx.InputMultiplexer multiplexer = new com.badlogic.gdx.InputMultiplexer();
         multiplexer.addProcessor(HUD.getStage());
+        multiplexer.addProcessor(historia.getStage());
         Gdx.input.setInputProcessor(multiplexer);
     }
 
@@ -268,13 +277,16 @@ public class Main extends Game {
                 enSeleccion = true;
             } else if (destino == -2) {
                 enSeleccion = false;
-                irAlMapaPrincipal();
+                enHistoria = true;
             } else if (destino == -3) {
                 reiniciarNivel();
             } else if (destino == -4) {
                 volverPausa();
             } else if (destino == -5) {
                 MenuPrincipal();
+            } else if (destino == -6) {
+                enHistoria = false;
+                irAlMapaPrincipal();
             }
         }
 
@@ -304,6 +316,8 @@ public class Main extends Game {
                     Gdx.app.log("SELECCION", "Personaje elegido: " + elegido);
                     transicion.empezarPantalla(-2);
                 }
+            } else if (enHistoria) {
+                historia.actualizar(delta);
             } else if (enMapaPrincipal) {
 
                 jugador.moverEn(mapaPrincipal, delta);
@@ -363,6 +377,8 @@ public class Main extends Game {
             batch.begin();
             seleccionPersonaje.dibujar(batch);
             batch.end();
+        } else if (enHistoria) {
+            historia.dibujar();
         } else if (enMapaPrincipal) {
             mapaPrincipal.botonMenuPresionado();
             if (mapaPrincipal.actualizarBotonMenu(delta)) {
@@ -402,6 +418,9 @@ public class Main extends Game {
         if (HUD != null && HUD.getStage() != null) {
             HUD.getStage().getViewport().update(width, height, true);
         }
+        if (historia != null && historia.getStage() != null) {
+            historia.getStage().getViewport().update(width, height, true);
+        }
     }
 
     @Override
@@ -416,6 +435,7 @@ public class Main extends Game {
         transicion.dispose();
         menu.dispose();
         seleccionPersonaje.dispose();
+        historia.dispose();
         if (musicaAmbiente != null) musicaAmbiente.dispose();
         if (musicasNiveles != null) {
             for (PistaMusical p : musicasNiveles) {

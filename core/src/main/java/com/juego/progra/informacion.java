@@ -12,8 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class informacion {
+
+    private static final int ANCHO_MUNDO = 1408;
+    private static final int ALTO_MUNDO = 768;
 
     private Main main;
     private Stage stage;
@@ -29,7 +33,7 @@ public class informacion {
     //C
     public informacion(Main main) {
         this.main = main;
-        this.stage = new Stage();
+        this.stage = new Stage(new FitViewport(ANCHO_MUNDO, ALTO_MUNDO));
         this.batch = new SpriteBatch();
 
         historiaPrincipio();
@@ -61,19 +65,18 @@ public class informacion {
         botonPrincipio.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("BOTON", "¡SE HIZO CLIC!");
                 if (pantallaAct == 1) {
                     pantallaAct = 2;
-                } else if (pantallaAct == 2) {
                     ImageButton.ImageButtonStyle nuevoEstilo = new ImageButton.ImageButtonStyle();
                     nuevoEstilo.up = new TextureRegionDrawable(new TextureRegion(new Texture("botonP2.png")));
                     nuevoEstilo.down = new TextureRegionDrawable(new TextureRegion(new Texture("botonP2.png")));
                     botonPrincipio.setStyle(nuevoEstilo);
+                } else if (pantallaAct == 2) {
+                    main.empezarSalidaHistoria();
                 }
             }
         });
         stage.addActor(botonPrincipio);
-        Gdx.app.log("INFO", "Boton agregado al Stage");
     }
 
     private void dibujarRector(SpriteBatch batch, float tiempo) {
@@ -125,5 +128,17 @@ public class informacion {
     }
     public Stage getStage() {
         return stage;
+    }
+
+    public void dispose() {
+        if (p1 != null) p1.dispose();
+        if (p2 != null) p2.dispose();
+        if (rector != null) {
+            for (Texture t : rector) {
+                if (t != null) t.dispose();
+            }
+        }
+        stage.dispose();
+        batch.dispose();
     }
 }
