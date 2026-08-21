@@ -1,12 +1,9 @@
 package com.juego.progra;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -48,7 +45,7 @@ public class informacion {
         p2 = new Texture("fondoP2.png");
         p3= new Texture("fondoP3.png");
 
-        // Rector (tamaño 4, índices 0, 1, 2, 3)
+        // Rector
         rector = new Texture[4];
         for (int i = 0; i < 4; i++) {
             rector[i] = new Texture("rector" + (i + 1) + ".png");
@@ -69,6 +66,9 @@ public class informacion {
             public void clicked(InputEvent event, float x, float y) {
                 if (pantallaAct == 1) {
                     pantallaAct=2;
+                    ImageButton.ImageButtonStyle estilo2 = new ImageButton.ImageButtonStyle();
+                    estilo2.up = new TextureRegionDrawable(new TextureRegion(new Texture("botonP1.png")));
+                    estilo2.down = new TextureRegionDrawable(new TextureRegion(new Texture("botonP1_Ab.png")));
                 } else if (pantallaAct == 2) {
                     pantallaAct=3;
                     ImageButton.ImageButtonStyle nuevoEstilo = new ImageButton.ImageButtonStyle();
@@ -77,6 +77,7 @@ public class informacion {
                     botonPrincipio.setStyle(nuevoEstilo);
                 }else if(pantallaAct==3){
                     main.empezarSalidaHistoria();
+                    pantallaAct=1;
                 }
             }
         });
@@ -127,7 +128,16 @@ public class informacion {
 
         stage.draw();
     }
-
+    public void reiniciar() {
+        pantallaAct = 1;
+        // Volver a establecer el estilo del botón al inicial (botonP1)
+        ImageButton.ImageButtonStyle estiloInicial = new ImageButton.ImageButtonStyle();
+        estiloInicial.up = new TextureRegionDrawable(new TextureRegion(new Texture("botonP1.png")));
+        estiloInicial.down = new TextureRegionDrawable(new TextureRegion(new Texture("botonP1_Ab.png")));
+        if (botonPrincipio != null) {
+            botonPrincipio.setStyle(estiloInicial);
+        }
+    }
     public void actualizar(float delta) {
         stateTime += delta;
         stage.act(delta);

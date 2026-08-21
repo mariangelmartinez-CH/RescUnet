@@ -153,6 +153,44 @@ public class Main extends Game {
         mapaPrincipal.mostrarBotonMenu(true);
 
     }
+    public void menuGameOver(){
+        for (PistaMusical p : musicasNiveles) {
+            p.detener();
+        }
+        if (!musicaAmbiente.estaSonando()) {
+            musicaAmbiente.empezar();
+        }
+        // Limpiar enemigos
+        if (enemigos != null) {
+            for (Enemigo e : enemigos) {
+                e.dispose();
+            }
+            enemigos.clear();
+        }
+
+        enMapaPrincipal = false;
+        enMenu = true;
+        nivelActual = 1;
+
+        if (mapaPrincipal != null) {
+            mapaPrincipal.mostrarBotonMenu(false);
+            mapaPrincipal.setNivelesGanados(0);
+        }
+
+        if (HUD != null) {
+            HUD.ocultarGameOver();
+        }
+
+        if (jugador != null) {
+            jugador.setVidas(5);
+        }
+        historia.reiniciar();
+        com.badlogic.gdx.InputMultiplexer multiplexer = new com.badlogic.gdx.InputMultiplexer();
+        multiplexer.addProcessor(HUD.getStage());
+        multiplexer.addProcessor(historia.getStage());
+        Gdx.input.setInputProcessor(multiplexer);
+    }
+
     public void MenuPrincipal() {
         enMapaPrincipal = false;
         enMenu = true;
@@ -174,6 +212,7 @@ public class Main extends Game {
 
     public void empezarSalidaHistoria() {
         transicion.empezarPantalla(-6);
+        historia.reiniciar();
     }
 
     private void cambiarNivel(int nuevoNivel) {
@@ -340,12 +379,23 @@ public class Main extends Game {
                 enCasa = tocandoCasaAhora;
             } else {
                 if (delta > 0) {
-                    jugador.actualizar(mapa, delta);
-                    for (Enemigo enemigo : enemigos) {
-                        enemigo.actualizar(mapa, delta);
-                        if (Math.abs(jugador.getX() - enemigo.getX()) < CONTACTO_X &&
-                            Math.abs(jugador.getY() - enemigo.getY()) < CONTACTO_Y) {
-                            jugador.recibirGolpe();
+                    if (!HUD.GameOverVisible()) {
+                        if (delta > 0) {
+                            jugador.actualizar(mapa, delta);
+                            for (Enemigo enemigo : enemigos) {
+                                enemigo.actualizar(mapa, delta);
+                                if (Math.abs(jugador.getX() - enemigo.getX()) < CONTACTO_X &&
+                                    Math.abs(jugador.getY() - enemigo.getY()) < CONTACTO_Y) {
+                                    jugador.recibirGolpe();
+                                }
+                            }
+                        }
+                        if (jugador.getVidas() <= 0) {
+                            HUD.mostrarGameOver();
+                        }
+                        if (mapa.saliendoPorArriba(jugador.caja(jugador.getX(), jugador.getY()))) {
+                            musicasNiveles[nivelActual - 1].fundidoSalida();
+                            transicion.empezarVuelta();
                         }
                     }
                 }
@@ -408,6 +458,7 @@ public class Main extends Game {
         }
     }
     public void reiniciarNivel(){
+        HUD.ocultarGameOver();
         cambiarNivel(nivelActual);
         jugador.setVidas(vidasEntroNivel);
     }
