@@ -25,6 +25,7 @@ public class informacion {
 
     private Texture p1;
     private Texture p2;
+    private Texture p3;
     private ImageButton botonPrincipio;
     private float stateTime;
     private Texture[] rector; // Arreglo de texturas
@@ -45,6 +46,7 @@ public class informacion {
         // Fondos
         p1 = new Texture("fondoP1.png");
         p2 = new Texture("fondoP2.png");
+        p3= new Texture("fondoP3.png");
 
         // Rector (tamaño 4, índices 0, 1, 2, 3)
         rector = new Texture[4];
@@ -66,12 +68,14 @@ public class informacion {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (pantallaAct == 1) {
-                    pantallaAct = 2;
+                    pantallaAct=2;
+                } else if (pantallaAct == 2) {
+                    pantallaAct=3;
                     ImageButton.ImageButtonStyle nuevoEstilo = new ImageButton.ImageButtonStyle();
                     nuevoEstilo.up = new TextureRegionDrawable(new TextureRegion(new Texture("botonP2.png")));
-                    nuevoEstilo.down = new TextureRegionDrawable(new TextureRegion(new Texture("botonP2.png")));
+                    nuevoEstilo.down = new TextureRegionDrawable(new TextureRegion(new Texture("botonP2_Ab.png")));
                     botonPrincipio.setStyle(nuevoEstilo);
-                } else if (pantallaAct == 2) {
+                }else if(pantallaAct==3){
                     main.empezarSalidaHistoria();
                 }
             }
@@ -80,13 +84,13 @@ public class informacion {
     }
 
     private void dibujarRector(SpriteBatch batch, float tiempo) {
-        float ciclo = tiempo % 0.80f;
+        float ciclo = tiempo % 1.60f;
         int fase;
-        if (ciclo < 0.2f) {
+        if (ciclo < 0.4f) {
             fase = 0;
-        } else if (ciclo < 0.4f) {
+        } else if (ciclo < 0.8f) {
             fase = 1;
-        } else if (ciclo < 0.6f) {
+        } else if (ciclo < 1.2f) {
             fase = 2;
         } else {
             fase = 3;
@@ -103,16 +107,18 @@ public class informacion {
 
         if (pantallaAct == 1) {
             fondo = p1;
-        } else {
+        } else if(pantallaAct==2) {
             fondo = p2;
+        }else{
+            fondo =p3;
         }
 
         batch.draw(
-            fondo,      // imagen
-            0,       // posición X
-            0,       // posición Y
-            1408,    // ancho
-            768      // alto
+            fondo,
+            0,
+            0,
+            1408,
+            768
         );
 
         dibujarRector(batch, stateTime);
