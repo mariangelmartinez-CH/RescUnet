@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -24,6 +25,8 @@ public class informacion {
     private Texture p2;
     private Texture p3;
     private ImageButton botonPrincipio;
+    private ImageButton.ImageButtonStyle estiloSiguiente;
+    private ImageButton.ImageButtonStyle estiloJugar;
     private float stateTime;
     private Texture[] rector; // Arreglo de texturas
     private int pantallaAct = 1;
@@ -36,14 +39,18 @@ public class informacion {
 
         historiaPrincipio();
         botonesPrincipio();
+        setActivo(false);
 
     }
 
+    public void setActivo(boolean activo) {
+        botonPrincipio.setTouchable(activo ? Touchable.enabled : Touchable.disabled);
+    }
+
     public void historiaPrincipio() {
-        // Fondos
         p1 = new Texture("fondoP1.png");
         p2 = new Texture("fondoP2.png");
-        p3= new Texture("fondoP3.png");
+        p3 = new Texture("fondoP3.png");
 
         // Rector
         rector = new Texture[4];
@@ -53,11 +60,15 @@ public class informacion {
     }
 
     public void botonesPrincipio() {
-        ImageButton.ImageButtonStyle estilo = new ImageButton.ImageButtonStyle();
-        estilo.up = new TextureRegionDrawable(new TextureRegion(new Texture("botonP1.png")));
-        estilo.down = new TextureRegionDrawable(new TextureRegion(new Texture("botonP1_Ab.png")));
+        estiloSiguiente = new ImageButton.ImageButtonStyle();
+        estiloSiguiente.up = new TextureRegionDrawable(new TextureRegion(new Texture("botonP1.png")));
+        estiloSiguiente.down = new TextureRegionDrawable(new TextureRegion(new Texture("botonP1_Ab.png")));
 
-        botonPrincipio = new ImageButton(estilo);
+        estiloJugar = new ImageButton.ImageButtonStyle();
+        estiloJugar.up = new TextureRegionDrawable(new TextureRegion(new Texture("botonP2.png")));
+        estiloJugar.down = new TextureRegionDrawable(new TextureRegion(new Texture("botonP2_Ab.png")));
+
+        botonPrincipio = new ImageButton(estiloSiguiente);
         botonPrincipio.setPosition(1080, 1);
         botonPrincipio.setSize(380, 200);
 
@@ -65,19 +76,12 @@ public class informacion {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (pantallaAct == 1) {
-                    pantallaAct=2;
-                    ImageButton.ImageButtonStyle estilo2 = new ImageButton.ImageButtonStyle();
-                    estilo2.up = new TextureRegionDrawable(new TextureRegion(new Texture("botonP1.png")));
-                    estilo2.down = new TextureRegionDrawable(new TextureRegion(new Texture("botonP1_Ab.png")));
+                    pantallaAct = 2;
                 } else if (pantallaAct == 2) {
-                    pantallaAct=3;
-                    ImageButton.ImageButtonStyle nuevoEstilo = new ImageButton.ImageButtonStyle();
-                    nuevoEstilo.up = new TextureRegionDrawable(new TextureRegion(new Texture("botonP2.png")));
-                    nuevoEstilo.down = new TextureRegionDrawable(new TextureRegion(new Texture("botonP2_Ab.png")));
-                    botonPrincipio.setStyle(nuevoEstilo);
-                }else if(pantallaAct==3){
+                    pantallaAct = 3;
+                    botonPrincipio.setStyle(estiloJugar);
+                } else if (pantallaAct == 3) {
                     main.empezarSalidaHistoria();
-                    pantallaAct=1;
                 }
             }
         });
@@ -130,12 +134,8 @@ public class informacion {
     }
     public void reiniciar() {
         pantallaAct = 1;
-        // Volver a establecer el estilo del botón al inicial (botonP1)
-        ImageButton.ImageButtonStyle estiloInicial = new ImageButton.ImageButtonStyle();
-        estiloInicial.up = new TextureRegionDrawable(new TextureRegion(new Texture("botonP1.png")));
-        estiloInicial.down = new TextureRegionDrawable(new TextureRegion(new Texture("botonP1_Ab.png")));
         if (botonPrincipio != null) {
-            botonPrincipio.setStyle(estiloInicial);
+            botonPrincipio.setStyle(estiloSiguiente);
         }
     }
     public void actualizar(float delta) {
@@ -149,6 +149,7 @@ public class informacion {
     public void dispose() {
         if (p1 != null) p1.dispose();
         if (p2 != null) p2.dispose();
+        if (p3 != null) p3.dispose();
         if (rector != null) {
             for (Texture t : rector) {
                 if (t != null) t.dispose();

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -20,46 +21,68 @@ public class animacionFinal {
     private Stage stage;
     private SpriteBatch batch;
 
+    private Texture llaves;
+    private Texture central;
     private Texture textFondo;
+    private ImageButton botonSiguiente;
     private ImageButton botonFinal;
     private float stateTime;
-    private Texture[] rector; // Arreglo de texturas
+    private Texture[] rector;
     private int pantallaAct = 1;
 
-    //C
     public animacionFinal(Main main) {
         this.main = main;
         this.stage = new Stage(new FitViewport(ANCHO_MUNDO, ALTO_MUNDO));
         this.batch = new SpriteBatch();
 
         historiaFinal();
-        botoneFinal();
-
+        botonesFinal();
+        setActivo(false);
     }
 
     public void historiaFinal() {
-        textFondo=new Texture("fondoFinal.png");
+        llaves = new Texture("llavesabriendo.png");
+        central = new Texture("central.png");
+        textFondo = new Texture("fondoFinal.png");
 
-        // Rector
         rector = new Texture[4];
         for (int i = 0; i < 4; i++) {
             rector[i] = new Texture("rector" + (i + 1) + ".png");
         }
     }
 
-    public void botoneFinal() {
-        ImageButton.ImageButtonStyle estilo = new ImageButton.ImageButtonStyle();
-        estilo.up = new TextureRegionDrawable(new TextureRegion(new Texture("botonFinal.png")));
-        estilo.down = new TextureRegionDrawable(new TextureRegion(new Texture("botonFinal_Ab.png")));
+    public void botonesFinal() {
+        ImageButton.ImageButtonStyle estiloSiguiente = new ImageButton.ImageButtonStyle();
+        estiloSiguiente.up = new TextureRegionDrawable(new TextureRegion(new Texture("botonP1.png")));
+        estiloSiguiente.down = new TextureRegionDrawable(new TextureRegion(new Texture("botonP1_Ab.png")));
 
-        botonFinal = new ImageButton(estilo);
+        botonSiguiente = new ImageButton(estiloSiguiente);
+        botonSiguiente.setPosition(1080, 1);
+        botonSiguiente.setSize(380, 200);
+        botonSiguiente.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (pantallaAct == 1) {
+                    pantallaAct = 2;
+                } else if (pantallaAct == 2) {
+                    pantallaAct = 3;
+                }
+            }
+        });
+        stage.addActor(botonSiguiente);
+
+        ImageButton.ImageButtonStyle estiloFinal = new ImageButton.ImageButtonStyle();
+        estiloFinal.up = new TextureRegionDrawable(new TextureRegion(new Texture("botonFinal.png")));
+        estiloFinal.down = new TextureRegionDrawable(new TextureRegion(new Texture("botonFinal_Ab.png")));
+
+        botonFinal = new ImageButton(estiloFinal);
         botonFinal.setPosition(1080, 1);
         botonFinal.setSize(380, 200);
-
         botonFinal.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                main.menuGameOver();
+                if (pantallaAct != 3) return;
+                main.empezarSalidaFinal();
             }
         });
         stage.addActor(botonFinal);
@@ -77,7 +100,7 @@ public class animacionFinal {
         } else {
             fase = 3;
         }
-        batch.draw(rector[fase], 42, 40,205,210);
+        batch.draw(rector[fase], 42, 40, 205, 210);
     }
 
     public void dibujar() {
@@ -85,19 +108,19 @@ public class animacionFinal {
 
         batch.begin();
 
-        Texture fondo;
-        fondo= textFondo;
-        batch.draw(
-            fondo,
-            0,
-            0,
-            1408,
-            768
-        );
-
-        dibujarRector(batch, stateTime);
+        if (pantallaAct == 1) {
+            batch.draw(llaves, 0, 0, ANCHO_MUNDO, ALTO_MUNDO);
+        } else if (pantallaAct == 2) {
+            batch.draw(central, 0, 0, ANCHO_MUNDO, ALTO_MUNDO);
+        } else {
+            batch.draw(textFondo, 0, 0, ANCHO_MUNDO, ALTO_MUNDO);
+            dibujarRector(batch, stateTime);
+        }
 
         batch.end();
+
+        botonSiguiente.setVisible(pantallaAct == 1 || pantallaAct == 2);
+        botonFinal.setVisible(pantallaAct == 3);
 
         stage.draw();
     }
@@ -106,12 +129,26 @@ public class animacionFinal {
         stateTime += delta;
         stage.act(delta);
     }
+
+    public void reiniciar() {
+        pantallaAct = 1;
+        stateTime = 0;
+    }
+
+    public void setActivo(boolean activo) {
+        Touchable t = activo ? Touchable.enabled : Touchable.disabled;
+        botonSiguiente.setTouchable(t);
+        botonFinal.setTouchable(t);
+    }
+
     public Stage getStage() {
         return stage;
     }
 
     public void dispose() {
-        textFondo.dispose();
+        if (llaves != null) llaves.dispose();
+        if (central != null) central.dispose();
+        if (textFondo != null) textFondo.dispose();
         if (rector != null) {
             for (Texture t : rector) {
                 if (t != null) t.dispose();
