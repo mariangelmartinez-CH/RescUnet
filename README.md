@@ -14,7 +14,7 @@
 
 Español | [English](#english)
 
-Este juego fue nuestro proyecto final de **Programación I** en la Universidad Nacional Experimental del Táchira (UNET), hecho en Java con libGDX. Lo hicimos en equipo Maria de los Angeles Marquez y yo.
+Este juego fue mi proyecto final de **Programación I** en la Universidad Nacional Experimental del Táchira (UNET), hecho en Java con libGDX.
 
 Fue la primera vez que armamos algo grande desde cero: pensar la historia, dibujar el flujo de pantallas, repartir el trabajo, juntar el código de las dos y resolver los conflictos de Git cuando chocaba. Aprendimos programación orientada a objetos de verdad, porque cada personaje, enemigo, objeto y mapa es una clase con su propia responsabilidad.
 
